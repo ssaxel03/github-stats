@@ -28,31 +28,31 @@ export default function Home() {
           {exampleCommits.map((commit, key) => (
             <div className={`squares-aligned w-full`} key={key}>
               <div className={`relative bg-accent-orange h-full ${key == exampleCommits.length - 1 ? `rounded-b pb-16` : ''}`}>
-                <div className="absolute aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark commit-timeline-point">
+                <div className="absolute aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid dark:border-third-dark border-dark commit-timeline-point">
 
                 </div>
               </div>
-              <a href={`#${key}`} className={`pl-8 hover:text-accent-orange ${key == exampleCommits.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repo}</a>
+              <a href={`#${key}`} className={`pl-8 dark:text-light hover:text-accent-orange ${key == exampleCommits.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repo}</a>
             </div>
           ))}
 
-          <button className="bg-second-light hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid border-dark">More</button>
+          <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid dark:border-third-dark border-dark">More</button>
         </section>
 
         <section className="flex flex-col gap-4 items-center justify-center w-full my-4" id="info">
 
           <div className="flex flex-row items-center justify-center w-full gap-6">
-            <div className="aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark"></div>
+            <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
             <div className="w-full">{format(info.stars)} stars</div>
           </div>
 
           <div className="flex flex-row items-center justify-center w-full gap-6">
-            <div className="aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark"></div>
+            <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
             <div className="w-full">{format(info.totalCommits)} total commits</div>
           </div>
 
           <div className="flex flex-row items-center justify-center w-full gap-6">
-            <div className="aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark"></div>
+            <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
             <div className="w-full">{format(info.yearCommits)} commits this year</div>
           </div>
 
@@ -62,26 +62,26 @@ export default function Home() {
 
           <div className="w-full flex flex-col items-start gap-2">
             <p>Java</p>
-            <div className="w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
+            <div className="w-full h-4 rounded-md border-b border-solid border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
               <div className="h-full w-[75%] bg-orange-500 rounded-r-md border-b border-solid border-dark"></div>
             </div>
           </div>
           <div className="w-full flex flex-col items-start gap-2">
             <p>JavaScript</p>
-            <div className="w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
-              <div className="flex items-start w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
-                <div className="h-full w-[15%] bg-yellow-500 rounded-r-md  border-b border-solid border-dark"></div>
-              </div>
+
+            <div className="w-full h-4 flex items-start w-full h-4 rounded-md border-b border-solid border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
+              <div className="h-full w-[15%] bg-yellow-500 rounded-r-md  border-b border-solid border-dark"></div>
             </div>
+
           </div>
           <div className="w-full flex flex-col items-start gap-2">
             <p>TypeScript</p>
-            <div className="flex items-start w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
+            <div className="w-full h-4 flex items-start w-full h-4 rounded-md border-b border-solid border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
               <div className="h-full w-[10%] bg-blue-500 rounded-r-md border-b border-solid border-dark"></div>
             </div>
           </div>
 
-          <button className="bg-second-light hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid border-dark">More</button>
+          <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid dark:border-third-dark border-dark">More</button>
 
         </section>
 

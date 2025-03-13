@@ -8,7 +8,9 @@
   --color-light: #E3E3E3;
   --color-second-light: #FFFFFF;
   --color-dark: #181818;
-  --color-accent-orange: #e3561e;
+  --color-second-dark: #383838;
+  --color-third-dark: #282828;
+  --color-accent-orange: #E3561E;
 }
 
 body {

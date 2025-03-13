@@ -25,11 +25,11 @@ export default async function Header({
     return (
         <>
 
-            <div className="overflow-hidden mb-4 border-b-2 border-solid rounded-[17px] aspect-square h-24">
+            <div className="overflow-hidden mb-4 border-b-2 dark:border-third-dark border-solid border-dark rounded-[17px] aspect-square h-24">
                 <img className="w-full h-full aspect-square" src={profile.avatar_url} alt="Profile picture" />
             </div>
             <a href={profile.html_url}>
-                <h1 className="text-2xl mb-16 hover:text-accent-orange">
+                <h1 className="text-2xl mb-16 dark:text-light hover:text-accent-orange">
                     {profile.name}
                 </h1>
             </a>

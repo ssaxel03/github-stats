@@ -12,9 +12,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="light" lang="en">
+    <html className="dark" lang="en">
       <body
-        className={`antialiased text-xl bg-light text-dark dark:bg-dark dark:text-light`}
+        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark`}
       >
         {children}
         <footer className="w-full flex flex-row items-center justify-center my-4">
