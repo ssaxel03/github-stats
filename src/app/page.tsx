@@ -1,103 +1,92 @@
-import Image from "next/image";
+import { format } from "@/utils/numberFormatter";
+import Header from "@/components/HeaderComponent";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+  const exampleCommits = [
+    { message: "feat: divided padding by all components for better visualization when using ids to navigate", repo: "web-portfolio" },
+    { message: "fix: fixed README.md project directory", repo: "web-portfolio" },
+    { message: "fix: tech icons size", repo: "web-portfolio" },
+    { message: "reformat: optimized portfolio data by reusing technology icons and info", repo: "web-portfolio" },
+    { message: "fix: removed unnecessary values from portfolio-data", repo: "web-portfolio" },
+  ]
+
+  const info = {
+    totalCommits: 297300,
+    yearCommits: 1032,
+    stars: 2321,
+  }
+
+  return (<>
+    <main className="flex justify-center items-center w-full">
+      <div className="flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-6">
+
+        <Header username="ssaxel03" />
+
+        <section className="flex flex-col items-center justify-center w-full px-2 my-4" id="last-commits">
+          {exampleCommits.map((commit, key) => (
+            <div className={`squares-aligned w-full`} key={key}>
+              <div className={`relative bg-accent-orange h-full ${key == exampleCommits.length - 1 ? `rounded-b pb-16` : ''}`}>
+                <div className="absolute aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark commit-timeline-point">
+
+                </div>
+              </div>
+              <a href={`#${key}`} className={`pl-8 hover:text-accent-orange ${key == exampleCommits.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repo}</a>
+            </div>
+          ))}
+
+          <button className="bg-second-light hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid border-dark">More</button>
+        </section>
+
+        <section className="flex flex-col gap-4 items-center justify-center w-full my-4" id="info">
+
+          <div className="flex flex-row items-center justify-center w-full gap-6">
+            <div className="aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark"></div>
+            <div className="w-full">{format(info.stars)} stars</div>
+          </div>
+
+          <div className="flex flex-row items-center justify-center w-full gap-6">
+            <div className="aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark"></div>
+            <div className="w-full">{format(info.totalCommits)} total commits</div>
+          </div>
+
+          <div className="flex flex-row items-center justify-center w-full gap-6">
+            <div className="aspect-square h-6 bg-second-light rounded-md border-b border-solid border-dark"></div>
+            <div className="w-full">{format(info.yearCommits)} commits this year</div>
+          </div>
+
+        </section>
+
+        <section className="flex flex-col w-full gap-4 items-center justify-center w-full my-4">
+
+          <div className="w-full flex flex-col items-start gap-2">
+            <p>Java</p>
+            <div className="w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
+              <div className="h-full w-[75%] bg-orange-500 rounded-r-md border-b border-solid border-dark"></div>
+            </div>
+          </div>
+          <div className="w-full flex flex-col items-start gap-2">
+            <p>JavaScript</p>
+            <div className="w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
+              <div className="flex items-start w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
+                <div className="h-full w-[15%] bg-yellow-500 rounded-r-md  border-b border-solid border-dark"></div>
+              </div>
+            </div>
+          </div>
+          <div className="w-full flex flex-col items-start gap-2">
+            <p>TypeScript</p>
+            <div className="flex items-start w-full h-4 rounded-md border-b border-solid border-dark h-6 bg-second-light overflow-hidden">
+              <div className="h-full w-[10%] bg-blue-500 rounded-r-md border-b border-solid border-dark"></div>
+            </div>
+          </div>
+
+          <button className="bg-second-light hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid border-dark">More</button>
+
+        </section>
+
+      </div>
+    </main >
+  </>
   );
 }
