@@ -14,9 +14,9 @@ export default function Home() {
     <main className="flex justify-center items-center w-full">
       <div className="flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-6">
 
-        <Header username="ssaxel03" />
+        <Header username="dwadawdawdawddddddddddddddddddddddddddd" />
 
-        <Commits username="ssaxel03" />
+        <Commits username="dwadawdawdaw" />
 
         <section className="flex flex-col gap-4 items-center justify-center w-full my-4" id="info">
 
