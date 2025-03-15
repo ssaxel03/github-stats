@@ -32,6 +32,7 @@ interface UserStats {
     contributionsThisYear: number;
 }
 
+// Returns the avatar url, login and url of the user's profile
 export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
     let profile: ProfileInfo = {
         avatar_url: "not-found-picture-light.svg",
@@ -57,7 +58,11 @@ export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
     return profile;
 }
 
+// Returns the 15 most recent commits included in the last 100 events (REST API is more direct at getting the commit info even though it's slower due to
+// having to process the info on my end)
+// Will probably change in the future
 export async function getRecentCommits(username: string): Promise<CommitInfo[]> {
+
     const githubResponse = await fetch(`https://api.github.com/users/${username}/events?per_page=100`, {
         headers: {
             Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
@@ -84,7 +89,7 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
 
     return recentCommits.slice(0, 15);
 }
-
+// Template function for fetching GitHub GraphQL API
 const fetchGraphQL = async (query: string, variables: Record<string, any> = {}): Promise<any> => {
     try {
         const response = await fetch("https://api.github.com/graphql", {
@@ -140,7 +145,7 @@ export async function getUserStats(username: string): Promise<UserStats> {
         if (!profileData.user) {
             throw new Error("User not found");
         }
-        
+
         const totalContributions = profileData.user.contributionsCollection.contributionCalendar.totalContributions || 0;
         const contributionsThisYear = profileData.user.contributionsThisYear.contributionCalendar.totalContributions || 0;
         const totalCommits = profileData.user.contributionsCollection.totalCommitContributions || 0;
@@ -196,8 +201,6 @@ async function fetchAllStars(username: string, cursor: string | null = null, ini
         while (currentCursor !== undefined) {
             const variables = { username, cursor: currentCursor, batchSize };
             const data = await fetchGraphQL(query, variables);
-
-            console.log(data.user.repositories.nodes);
 
             if (!data.user?.repositories) break;
 
