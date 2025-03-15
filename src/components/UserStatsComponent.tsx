@@ -25,22 +25,22 @@ export default async function Stats({
 
             <div className="flex flex-row items-center justify-center w-full gap-6">
                 <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-                <div className="w-full">{format(userStats.totalContributions + 10000)} total contributions</div>
+                <div className="w-full">{format(userStats.totalContributions)} contributions</div>
             </div>
 
             <div className="flex flex-row items-center justify-center w-full gap-6">
                 <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-                <div className="w-full">{format(userStats.contributionsThisYear)} total contributions this year</div>
+                <div className="w-full">{format(userStats.contributionsThisYear)} contributions this year</div>
             </div>
 
             <div className="flex flex-row items-center justify-center w-full gap-6">
                 <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-                <div className="w-full">{format(userStats.totalCommits)} total commits</div>
+                <div className="w-full">{format(userStats.totalCommits)} commits</div>
             </div>
 
             <div className="flex flex-row items-center justify-center w-full gap-6">
                 <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-                <div className="w-full">{format(userStats.commitsThisYear)} total commits this year</div>
+                <div className="w-full">{format(userStats.commitsThisYear)} commits this year</div>
             </div>
 
         </section>
