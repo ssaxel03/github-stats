@@ -7,6 +7,7 @@ export default function Commits({
 }: Readonly<{
     username: string;
 }>) {
+    
 
     const [recentCommits, setRecentCommits] = useState<{ message: string; repository: string }[]>([]);
     const [commitsShown, setCommitsShown] = useState<{ message: string; repository: string }[]>([]);
@@ -33,10 +34,10 @@ export default function Commits({
 
                         </div>
                     </div>
-                    <a href={`#${key}`} className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</a>
+                    <a target="_blank" href={`https://github.com/${commit.repository}`} className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</a>
                 </div>
             ))}
-            {!showAll && (
+            {!showAll && (commitsShown.length < recentCommits.length) && (
                 <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid dark:border-third-dark border-dark"
                     onClick={() => {
                         setCommitsShown(recentCommits);

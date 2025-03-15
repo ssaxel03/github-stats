@@ -32,6 +32,21 @@ interface UserStats {
     contributionsThisYear: number;
 }
 
+interface GitHubUser {
+    contributionsCollection: {
+        totalCommitContributions: number;
+        contributionCalendar: { totalContributions: number };
+    };
+    contributionsThisYear: {
+        totalCommitContributions: number;
+        contributionCalendar: { totalContributions: number };
+    };
+}
+
+interface GraphQLResponse {
+    user: GitHubUser | null;
+}
+
 // Returns the avatar url, login and url of the user's profile
 export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
     let profile: ProfileInfo = {
@@ -83,36 +98,32 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
     const recentCommits: CommitInfo[] = pushEvents.flatMap(event =>
         (event.payload.commits || []).map(commit => ({
             message: commit.message,
-            repository: event.repo.name
+            repository: event.repo.name,
         }))
     );
 
     return recentCommits.slice(0, 15);
 }
+
 // Template function for fetching GitHub GraphQL API
-const fetchGraphQL = async (query: string, variables: Record<string, any> = {}): Promise<any> => {
-    try {
-        const response = await fetch("https://api.github.com/graphql", {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ query, variables })
-        });
+const fetchGraphQL = async <T, V = Record<string, unknown>>(query: string, variables: V = {} as V): Promise<T> => {
+    const response = await fetch("https://api.github.com/graphql", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query, variables })
+    });
 
-        const data = await response.json();
+    const data: { data: T; errors?: unknown } = await response.json();
 
-        if (data.errors) {
-            console.error("GraphQL Error:", data.errors);
-            throw new Error(`GitHub API Error: ${JSON.stringify(data.errors)}`);
-        }
-
-        return data.data;
-    } catch (error) {
-        console.error("Error fetching GraphQL data:", error);
-        throw error;
+    if (data.errors) {
+        console.error("GraphQL Error:", data.errors);
+        throw new Error(`GitHub API Error: ${JSON.stringify(data.errors)}`);
     }
+
+    return data.data;
 };
 
 // Optimized function to get user stats in a single query
@@ -140,9 +151,9 @@ export async function getUserStats(username: string): Promise<UserStats> {
             }
         }`;
 
-        const profileData = await fetchGraphQL(profileQuery, { username, since: sinceDate });
+        const profileData = await fetchGraphQL<GraphQLResponse>(profileQuery, { username, since: sinceDate });
 
-        if (!profileData.user) {
+        if (!profileData || !profileData.user) {
             throw new Error("User not found");
         }
 
@@ -177,7 +188,7 @@ export async function getUserStats(username: string): Promise<UserStats> {
 async function fetchAllStars(username: string, cursor: string | null = null, initialCount: number = 0): Promise<number> {
     let totalStars = initialCount;
     let currentCursor = cursor;
-    let batchSize = 100; // Max number of repos per call
+    const batchSize = 100; // Max number of repos per call
 
     const query = `
     query ($username: String!, $cursor: String, $batchSize: Int!) {
@@ -200,12 +211,13 @@ async function fetchAllStars(username: string, cursor: string | null = null, ini
     try {
         while (currentCursor !== undefined) {
             const variables = { username, cursor: currentCursor, batchSize };
-            const data = await fetchGraphQL(query, variables);
+            const data = await fetchGraphQL<{ user: { repositories: { nodes: { stargazers: { totalCount: number } }[]; pageInfo: { hasNextPage: boolean; endCursor: string | null } } } }>(query, variables);
 
-            if (!data.user?.repositories) break;
+            if (!data?.user?.repositories) break;
+
 
             const batchStars = data.user.repositories.nodes.reduce(
-                (sum: number, repo: any) => sum + (repo.stargazers.totalCount || 0),
+                (sum: number, repo: { stargazers: { totalCount: number } }) => sum + (repo.stargazers.totalCount || 0),
                 0
             );
 
@@ -224,5 +236,88 @@ async function fetchAllStars(username: string, cursor: string | null = null, ini
     } catch (error) {
         console.error("Error fetching stars:", error);
         return totalStars;
+    }
+}
+
+export async function getTopLanguages(username: string) {
+    const languageStats: Record<string, { size: number; color: string }> = {};
+    let cursor: string | null = null;
+    const batchSize = 100; // Max repositories per request
+
+    const query = `
+    query ($username: String!, $cursor: String, $batchSize: Int!) {
+        user(login: $username) {
+            repositories(first: $batchSize, after: $cursor, ownerAffiliations: OWNER, isFork: false) {
+                pageInfo {
+                    hasNextPage
+                    endCursor
+                }
+                nodes {
+                    languages(first: 100) {
+                        edges {
+                            size
+                            node {
+                                name
+                                color
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }`;
+
+    try {
+        while (cursor !== undefined) {
+            const variables: { username: string; cursor: string | null; batchSize: number } = { username, cursor, batchSize };
+            const data = await fetchGraphQL<{
+                user: {
+                    repositories: {
+                        nodes: {
+                            languages: {
+                                edges: { size: number; node: { name: string; color: string } }[];
+                            };
+                        }[];
+                        pageInfo: {
+                            hasNextPage: boolean;
+                            endCursor: string | null;
+                        };
+                    };
+                };
+            }>(query, variables);
+
+
+            if (!data.user?.repositories) break;
+
+            data.user.repositories.nodes.forEach((repo: { languages: { edges: { size: number; node: { name: string; color: string } }[] } }) => {
+                repo.languages.edges.forEach((lang) => {
+                    const { name, color } = lang.node;
+                    const size = lang.size;
+                    if (!languageStats[name]) {
+                        languageStats[name] = { size: 0, color };
+                    }
+                    languageStats[name].size += size;
+                });
+            });
+
+            if (data.user.repositories.pageInfo.hasNextPage) {
+                cursor = data.user.repositories.pageInfo.endCursor;
+            } else {
+                break;
+            }
+        }
+
+        const totalSize = Object.values(languageStats).reduce((sum, lang) => sum + lang.size, 0);
+
+        return Object.entries(languageStats)
+            .map(([name, data]) => ({
+                name,
+                percent: ((data.size / totalSize) * 100).toFixed(2),
+                color: data.color,
+            }))
+            .sort((a, b) => parseFloat(b.percent) - parseFloat(a.percent));
+    } catch (error) {
+        console.error("Error fetching languages:", error);
+        return [];
     }
 }
