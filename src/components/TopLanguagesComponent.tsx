@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import { getTopLanguages } from "@/utils/fetcher";
 
 export default function Languages({
-    username,
+    username, increaseLoaded
 }: Readonly<{
     username: string;
+    increaseLoaded: () => void;
 }>) {
 
     const [topLanguages, setTopLanguages] = useState<{ name: string; percent: string, color: string }[]>([]);
@@ -18,6 +19,7 @@ export default function Languages({
 
             setTopLanguages(langs);
             setLanguagesShown(langs.slice(0, 5));
+            increaseLoaded();
         }
 
         fetchCommits();

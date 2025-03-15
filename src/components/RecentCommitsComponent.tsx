@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import { getRecentCommits } from "@/utils/fetcher";
 
 export default function Commits({
-    username,
+    username, increaseLoaded
 }: Readonly<{
     username: string;
+    increaseLoaded: () => void;
 }>) {
     
 
@@ -19,6 +20,7 @@ export default function Commits({
             console.log(commits);
             setRecentCommits(commits.slice(0, 15));
             setCommitsShown(commits.slice(0, 5));
+            increaseLoaded();
         }
 
         fetchCommits();
