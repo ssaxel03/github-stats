@@ -110,32 +110,26 @@ const fetchGraphQL = async (query: string, variables: Record<string, any> = {}):
     }
 };
 
-// Optimized function to get user stats in a single query when possible
+// Optimized function to get user stats in a single query
 export async function getUserStats(username: string): Promise<UserStats> {
     const currentYear = new Date().getFullYear();
     const sinceDate = `${currentYear}-01-01T00:00:00Z`;
 
     try {
-        // Step 1: Get contributions and repository count
+        // Step 1: Get contributions and commits
         const profileQuery = `
         query ($username: String!, $since: DateTime!) {
             user(login: $username) {
-                repositories(affiliations: OWNER) {
-                    totalCount
-                }
                 contributionsCollection {
+                    totalCommitContributions
                     contributionCalendar {
                         totalContributions
                     }
                 }
                 contributionsThisYear: contributionsCollection(from: $since) {
+                    totalCommitContributions
                     contributionCalendar {
                         totalContributions
-                    }
-                    commitContributionsByRepository {
-                        contributions {
-                            totalCount
-                        }
                     }
                 }
             }
@@ -146,127 +140,16 @@ export async function getUserStats(username: string): Promise<UserStats> {
         if (!profileData.user) {
             throw new Error("User not found");
         }
-
-        const repoCount = profileData.user.repositories.totalCount;
+        
         const totalContributions = profileData.user.contributionsCollection.contributionCalendar.totalContributions || 0;
         const contributionsThisYear = profileData.user.contributionsThisYear.contributionCalendar.totalContributions || 0;
-
-        // Step 2: Get total stars from top 100 repositories
-        const starsQuery = `
-        query ($username: String!) {
-            user(login: $username) {
-                repositories(first: 100, affiliations: OWNER, orderBy: {field: STARGAZERS, direction: DESC}) {
-                    nodes {
-                        stargazerCount
-                    }
-                    pageInfo {
-                        hasNextPage
-                        endCursor
-                    }
-                    totalCount
-                }
-            }
-        }`;
-
-        const stars = await fetchAllStars(username, null);
-
-        // Step 4: Get commit counts
-        // GitHub API doesn't provide a simple way to get all commit counts
-        // We'll use the REST API to get a top repositories sample
-
-        // First try to get contributions data as a proxy for commits
-        const contributionsData = await getContributionCounts(username);
-        let totalCommits = contributionsData.total;
-        let commitsThisYear = contributionsData.thisYear;
-
-        // If we couldn't get good data from contributions, use repository history
-        if (totalCommits === 0) {
-            // Get commits from top repositories as a sample
-            const topRepoQuery = `
-            query ($username: String!) {
-                user(login: $username) {
-                    repositories(first: 10, affiliations: OWNER, orderBy: {field: PUSHED_AT, direction: DESC}) {
-                        nodes {
-                            name
-                            defaultBranchRef {
-                                name
-                            }
-                        }
-                    }
-                }
-            }`;
-
-            const topRepoData = await fetchGraphQL(topRepoQuery, { username });
-
-            // Get commit counts for top repositories using REST API
-            let sampleCommits = 0;
-            let sampleCommitsThisYear = 0;
-            const yearStart = new Date(`${currentYear}-01-01T00:00:00Z`);
-
-            for (const repo of topRepoData.user.repositories.nodes) {
-                if (repo.defaultBranchRef?.name) {
-                    try {
-                        // Get total commits for this repo
-                        const commitsResponse = await fetch(
-                            `https://api.github.com/repos/${username}/${repo.name}/commits?per_page=1&sha=${repo.defaultBranchRef.name}`,
-                            {
-                                headers: {
-                                    Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                                }
-                            }
-                        );
-
-                        if (commitsResponse.ok) {
-                            // GitHub returns commit count in the Link header for pagination
-                            const linkHeader = commitsResponse.headers.get('Link') || '';
-                            const match = linkHeader.match(/page=(\d+)>; rel="last"/);
-
-                            if (match && match[1]) {
-                                const repoCommitCount = parseInt(match[1], 10);
-                                sampleCommits += repoCommitCount;
-
-                                // Get commits since this year
-                                const commitsThisYearResponse = await fetch(
-                                    `https://api.github.com/repos/${username}/${repo.name}/commits?per_page=1&sha=${repo.defaultBranchRef.name}&since=${sinceDate}`,
-                                    {
-                                        headers: {
-                                            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                                        }
-                                    }
-                                );
-
-                                if (commitsThisYearResponse.ok) {
-                                    const yearLinkHeader = commitsThisYearResponse.headers.get('Link') || '';
-                                    const yearMatch = yearLinkHeader.match(/page=(\d+)>; rel="last"/);
-
-                                    if (yearMatch && yearMatch[1]) {
-                                        sampleCommitsThisYear += parseInt(yearMatch[1], 10);
-                                    }
-                                }
-                            }
-                        }
-                    } catch (error) {
-                        console.error(`Error fetching commits for ${repo.name}:`, error);
-                    }
-                }
-            }
-
-            // Scale the sample based on repository count
-            if (sampleCommits > 0) {
-                // For large accounts, we scale but cap the multiplier to avoid extreme estimates
-                const scaleFactor = Math.min(repoCount / 10, 15);
-                totalCommits = Math.round(sampleCommits * scaleFactor);
-                commitsThisYear = Math.round(sampleCommitsThisYear * scaleFactor);
-            } else {
-                // If we still couldn't get commit data, fall back to contribution counts
-                totalCommits = totalContributions;
-                commitsThisYear = contributionsThisYear;
-            }
-        }
+        const totalCommits = profileData.user.contributionsCollection.totalCommitContributions || 0;
+        const commitsThisYear = profileData.user.contributionsThisYear.totalCommitContributions || 0;
+        const stars = await fetchAllStars(username);
 
         // Return the combined stats
         return {
-            stars: stars,
+            stars,
             totalCommits,
             commitsThisYear,
             totalContributions,
@@ -285,12 +168,11 @@ export async function getUserStats(username: string): Promise<UserStats> {
     }
 }
 
-// Helper function to fetch all stars with pagination
+// Returns all stars a given user has
 async function fetchAllStars(username: string, cursor: string | null = null, initialCount: number = 0): Promise<number> {
     let totalStars = initialCount;
     let currentCursor = cursor;
-    let batchSize = 100; // Fetch 100 repos per batch
-    let batchCount = 1; // To keep track of the number of batches
+    let batchSize = 100; // Max number of repos per call
 
     const query = `
     query ($username: String!, $cursor: String, $batchSize: Int!) {
@@ -329,46 +211,15 @@ async function fetchAllStars(username: string, cursor: string | null = null, ini
             // Check if there is more data
             if (data.user.repositories.pageInfo.hasNextPage) {
                 currentCursor = data.user.repositories.pageInfo.endCursor;
-                batchCount++;
             } else {
                 break;
             }
         }
 
-        // If more repositories are available, we return the total stars
+        // If no more repositories are available, return the total stars
         return totalStars;
     } catch (error) {
         console.error("Error fetching stars:", error);
-        return totalStars; // Return what we have so far
-    }
-}
-
-// Get commit contribution counts from GitHub API
-async function getContributionCounts(username: string): Promise<{ total: number, thisYear: number }> {
-    const currentYear = new Date().getFullYear();
-    const sinceDate = `${currentYear}-01-01T00:00:00Z`;
-
-    try {
-        const query = `
-        query ($username: String!, $since: DateTime!) {
-            user(login: $username) {
-                contributionsCollection {
-                    totalCommitContributions
-                }
-                contributionsThisYear: contributionsCollection(from: $since) {
-                    totalCommitContributions
-                }
-            }
-        }`;
-
-        const data = await fetchGraphQL(query, { username, since: sinceDate });
-
-        return {
-            total: data.user.contributionsCollection.totalCommitContributions || 0,
-            thisYear: data.user.contributionsThisYear.totalCommitContributions || 0
-        };
-    } catch (error) {
-        console.error("Error fetching contribution counts:", error);
-        return { total: 0, thisYear: 0 };
+        return totalStars;
     }
 }
