@@ -1,4 +1,12 @@
 "use server";
+
+interface ProfileInfo {
+    avatar_url: string;
+    avatar_url_dark: string;
+    login: string;
+    html_url: string;
+}
+
 interface GitHubEvent {
     type: string;
     public: boolean;
@@ -16,8 +24,35 @@ interface CommitInfo {
     repository: string;
 }
 
+export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
+
+    let profile : ProfileInfo = {
+        avatar_url: "not-found-picture-light.svg",
+        avatar_url_dark: "not-found-picture-dark.svg",
+        login: "NOT FOUND",
+        html_url: "#NOT_FOUND"
+    }
+
+    const githubResponse = await fetch(`https://api.github.com/users/${username}`,
+        {
+            headers: {
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+            }
+        }
+    )
+
+    if (githubResponse.ok) {
+        profile = await githubResponse.json();
+        profile.login = "@" + profile.login;
+        profile.avatar_url_dark = profile.avatar_url;
+    }
+
+    return profile;
+
+}
+
 export async function getRecentCommits(username: string): Promise<CommitInfo[]> {
-    
+
     const githubResponse = await fetch(`https://api.github.com/users/${username}/events`, {
         headers: {
             Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,

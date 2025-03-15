@@ -1,29 +1,17 @@
+import { getHeaderInfo } from "@/utils/fetcher";
+
 export default async function Header({
     username,
 }: Readonly<{
     username: string;
 }>) {
 
-    let profile = {
-        avatar_url: "not-found-picture-light.svg",
-        avatar_url_dark: "not-found-picture-dark.svg",
-        login: "NOT FOUND",
-        html_url: "#NOT_FOUND"
-    }
-
-    const githubResponse = await fetch(`https://api.github.com/users/${username}`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-            }
-        }
-    )
-
-    if (githubResponse.ok) {
-        profile = await githubResponse.json();
-        profile.login = "@" + profile.login;
-        profile.avatar_url_dark = profile.avatar_url;
-    }
+    const profile: {
+        avatar_url: string;
+        avatar_url_dark: string;
+        login: string;
+        html_url: string;
+    } = await getHeaderInfo(username);
 
     return (
         <section className="flex flex-col items-center justify-center w-full px-2 my-4">
