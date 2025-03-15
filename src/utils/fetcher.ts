@@ -32,7 +32,7 @@ interface UserStats {
 
 export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
 
-    let profile : ProfileInfo = {
+    let profile: ProfileInfo = {
         avatar_url: "not-found-picture-light.svg",
         avatar_url_dark: "not-found-picture-dark.svg",
         login: "NOT FOUND",
@@ -89,7 +89,7 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
 const fetchAllRepos = async (username: string): Promise<any[]> => {
     let repos: any[] = [];
     let page = 1;
-    
+
     // Handle pagination for repositories
     while (true) {
         const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&page=${page}`, {
@@ -102,14 +102,14 @@ const fetchAllRepos = async (username: string): Promise<any[]> => {
 
         const data = await response.json();
         repos = repos.concat(data);
-        
+
         // Check if there are more pages
         const linkHeader = response.headers.get('Link');
         if (!linkHeader || !linkHeader.includes('rel="next"')) break;
-        
+
         page++;
     }
-    
+
     return repos;
 };
 
@@ -129,7 +129,7 @@ const fetchAllCommits = async (username: string, repoName: string): Promise<any[
 
         const data = await response.json();
         commits = commits.concat(data);
-        
+
         // Check if there are more pages
         const linkHeader = response.headers.get('Link');
         if (!linkHeader || !linkHeader.includes('rel="next"')) break;

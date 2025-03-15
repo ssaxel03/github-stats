@@ -1,6 +1,7 @@
 import { format } from "@/utils/numberFormatter";
 import Header from "@/components/HeaderComponent";
 import Commits from "@/components/RecentCommitsComponent";
+import Stats from "@/components/UserStatsComponent";
 
 export default function Home() {
 
@@ -10,32 +11,17 @@ export default function Home() {
     stars: 2321,
   }
 
+  const username = "ssaxel03";
+
   return (<>
     <main className="flex justify-center items-center w-full">
       <div className="flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-6">
 
-        <Header username="ssaxel03" />
+        <Header username={username} />
 
-        <Commits username="ssaxel03" />
+        <Commits username={username} />
 
-        <section className="flex flex-col gap-4 items-center justify-center w-full my-4" id="info">
-
-          <div className="flex flex-row items-center justify-center w-full gap-6">
-            <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-            <div className="w-full">{format(info.stars)} stars</div>
-          </div>
-
-          <div className="flex flex-row items-center justify-center w-full gap-6">
-            <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-            <div className="w-full">{format(info.totalCommits)} total commits</div>
-          </div>
-
-          <div className="flex flex-row items-center justify-center w-full gap-6">
-            <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid border-dark"></div>
-            <div className="w-full">{format(info.yearCommits)} commits this year</div>
-          </div>
-
-        </section>
+        <Stats username={username} />
 
         <section className="flex flex-col w-full gap-4 items-center justify-center w-full my-4">
 
