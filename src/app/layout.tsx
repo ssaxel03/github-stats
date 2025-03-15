@@ -18,7 +18,7 @@ export default function RootLayout({
       >
         {children}
         <footer className="w-full flex flex-row items-center justify-center my-4">
-          <span>Made by <a className="hover:text-accent-orange" href="https://github.com/ssaxel03">@ssaxel03</a></span>
+          <span>Made by <a className="hover:text-accent-orange" target="_blank" href="https://github.com/ssaxel03">@ssaxel03</a></span>
         </footer>
       </body>
     </html>

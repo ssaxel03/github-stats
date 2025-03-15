@@ -20,7 +20,7 @@ export default async function Header({
                 <img className="block dark:hidden w-full h-full aspect-square" src={profile.avatar_url} alt="Profile picture" />
                 <img className="dark:block hidden w-full h-full aspect-square" src={profile.avatar_url_dark} alt="Profile picture" />
             </div>
-            <a href={profile.html_url}>
+            <a target="_blank" href={profile.html_url}>
                 <h1 className="text-2xl mb-16 dark:text-light hover:text-accent-orange">
                     {profile.login}
                 </h1>
