@@ -29,7 +29,7 @@ export default function Commits({
             {commitsShown.map((commit, key) => (
                 <div className={`squares-aligned w-full`} key={key}>
                     <div className={`relative bg-accent-orange h-full ${key == commitsShown.length - 1 ? `rounded-b pb-16` : ''}`}>
-                        <div className="absolute aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid dark:border-third-dark border-dark commit-timeline-point">
+                        <div className="absolute aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b-2 border-solid dark:border-third-dark border-dark commit-timeline-point">
 
                         </div>
                     </div>
