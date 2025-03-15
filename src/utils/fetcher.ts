@@ -28,6 +28,8 @@ interface UserStats {
     stars: number;
     totalCommits: number;
     commitsThisYear: number;
+    totalContributions: number;
+    contributionsThisYear: number;
 }
 
 export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
@@ -86,93 +88,169 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
     return recentCommits.slice(0, 15);
 }
 
-const fetchAllRepos = async (username: string): Promise<any[]> => {
-    let repos: any[] = [];
-    let page = 1;
+const fetchGraphQL = async (query: string, variables: Record<string, any> = {}): Promise<any> => {
+    const response = await fetch("https://api.github.com/graphql", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${process.env.GITHUB_TOKEN}`,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ query, variables })
+    });
 
-    // Handle pagination for repositories
-    while (true) {
-        const response = await fetch(`https://api.github.com/users/${username}/repos?per_page=100&page=${page}`, {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-            },
-        });
-
-        if (!response.ok) return repos;
-
-        const data = await response.json();
-        repos = repos.concat(data);
-
-        // Check if there are more pages
-        const linkHeader = response.headers.get('Link');
-        if (!linkHeader || !linkHeader.includes('rel="next"')) break;
-
-        page++;
+    const data = await response.json();
+    if (data.errors) {
+        throw new Error(`GitHub API Error: ${JSON.stringify(data.errors)}`);
     }
+
+    return data.data;
+};
+
+const fetchAllRepositories = async (username: string): Promise<any[]> => {
+    let repos: any[] = [];
+    let cursor: string | null = null;
+
+    do {
+        const query = `
+        query ($username: String!, $cursor: String) {
+            user(login: $username) {
+                repositories(first: 100, after: $cursor, affiliations: OWNER) {
+                    pageInfo {
+                        hasNextPage
+                        endCursor
+                    }
+                    nodes {
+                        name
+                        stargazerCount  # FIX: This ensures stars are retrieved
+                        defaultBranchRef {
+                            target {
+                                ... on Commit {
+                                    history {
+                                        totalCount
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }`;
+
+        const variables = { username, cursor };
+        const data = await fetchGraphQL(query, variables);
+
+        repos = repos.concat(data.user.repositories.nodes);
+        cursor = data.user.repositories.pageInfo.hasNextPage ? data.user.repositories.pageInfo.endCursor : null;
+
+    } while (cursor);
 
     return repos;
 };
 
-const fetchAllCommits = async (username: string, repoName: string): Promise<any[]> => {
-    let commits: any[] = [];
-    let page = 1;
+// Function to fetch commits for a specific repository (with pagination)
+const fetchCommitsForRepo = async (username: string, repoName: string, since: string): Promise<number> => {
+    let totalCommits = 0;
+    let cursor: string | null = null;
 
-    // Handle pagination for commits in a repo
-    while (true) {
-        const response = await fetch(`https://api.github.com/repos/${username}/${repoName}/commits?per_page=100&page=${page}`, {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-            },
-        });
+    do {
+        const query = `
+        query ($username: String!, $repoName: String!, $cursor: String) {
+            repository(owner: $username, name: $repoName) {
+                defaultBranchRef {
+                    target {
+                        ... on Commit {
+                            history(first: 100, after: $cursor) {
+                                pageInfo {
+                                    hasNextPage
+                                    endCursor
+                                }
+                                edges {
+                                    node {
+                                        committedDate
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }`;
 
-        if (!response.ok) return commits;
+        const variables = { username, repoName, cursor };
+        const data = await fetchGraphQL(query, variables);
 
-        const data = await response.json();
-        commits = commits.concat(data);
+        if (data.repository?.defaultBranchRef?.target?.history?.edges) {
+            totalCommits += data.repository.defaultBranchRef.target.history.edges.filter(
+                (commit: any) => new Date(commit.node.committedDate) >= new Date(since)
+            ).length;
+        }
 
-        // Check if there are more pages
-        const linkHeader = response.headers.get('Link');
-        if (!linkHeader || !linkHeader.includes('rel="next"')) break;
+        cursor = data.repository?.defaultBranchRef?.target?.history?.pageInfo?.hasNextPage
+            ? data.repository.defaultBranchRef.target.history.pageInfo.endCursor
+            : null;
 
-        page++;
-    }
+    } while (cursor);
 
-    return commits;
+    return totalCommits;
 };
 
+// Main function to fetch all user stats
 export async function getUserStats(username: string): Promise<UserStats> {
     const currentYear = new Date().getFullYear();
+    const since = `${currentYear}-01-01T00:00:00Z`;
 
-    // Fetch all repositories for the user
-    const repos = await fetchAllRepos(username);
+    // Fetch all repositories
+    const repos = await fetchAllRepositories(username);
+
+    console.log(repos);
 
     // Calculate total stars
-    const totalStars = repos.reduce((acc: number, repo: { stargazers_count: number }) => acc + repo.stargazers_count, 0);
+    const totalStars = repos.reduce((acc, repo) => acc + (repo.stargazerCount || 0), 0);
 
-    // Initialize commit counters
-    let totalCommits = 0;
+    console.log("totalStars : " + totalStars);
+
+    // Fetch all-time commit count
+    const totalCommits = repos.reduce((acc, repo) => acc + (repo.defaultBranchRef?.target?.history?.totalCount || 0), 0);
+
+    // Fetch commits for this year using pagination
     let commitsThisYear = 0;
-
-    // Loop through each repo and get all commits
     for (const repo of repos) {
-        const commits = await fetchAllCommits(username, repo.name);
-
-        // Filter commits for this user only
-        const userCommits = commits.filter((commit: any) => commit.author?.login === username);
-
-        // Count total commits for this repository
-        totalCommits += userCommits.length;
-
-        // Count commits for the current year
-        commitsThisYear += userCommits.filter((commit: any) => {
-            const commitYear = new Date(commit.committer.date).getFullYear();
-            return commitYear === currentYear;
-        }).length;
+        commitsThisYear += await fetchCommitsForRepo(username, repo.name, since);
     }
+
+    // GraphQL query to fetch total contributions
+    const query = `
+    query ($username: String!, $since: DateTime!) {
+        user(login: $username) {
+            contributionsCollection {
+                contributionCalendar {
+                    totalContributions
+                }
+            }
+            contributionsThisYear: contributionsCollection(from: $since) {
+                contributionCalendar {
+                    totalContributions
+                }
+            }
+        }
+    }`;
+
+    const variables = { username, since };
+    const data = await fetchGraphQL(query, variables);
+
+    console.log({
+        stars: totalStars,
+        totalCommits,
+        commitsThisYear,
+        totalContributions: data.user.contributionsCollection.contributionCalendar.totalContributions || 0,
+        contributionsThisYear: data.user.contributionsThisYear.contributionCalendar.totalContributions || 0
+    });
 
     return {
         stars: totalStars,
-        totalCommits: totalCommits,
-        commitsThisYear: commitsThisYear,
+        totalCommits,
+        commitsThisYear,
+        totalContributions: data.user.contributionsCollection.contributionCalendar.totalContributions || 0,
+        contributionsThisYear: data.user.contributionsThisYear.contributionCalendar.totalContributions || 0
     };
 }
