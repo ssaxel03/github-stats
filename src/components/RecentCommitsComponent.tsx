@@ -1,53 +1,48 @@
-export default async function Commits({
+"use client";
+import { useState, useEffect } from "react";
+import { getRecentCommits } from "@/utils/fetcher";
+
+export default function Commits({
     username,
 }: Readonly<{
     username: string;
 }>) {
 
-    const exampleCommits = [
-        { message: "feat: divided padding by all components for better visualization when using ids to navigate", repo: "web-portfolio" },
-        { message: "fix: fixed README.md project directory", repo: "web-portfolio" },
-        { message: "fix: tech icons size", repo: "web-portfolio" },
-        { message: "reformat: optimized portfolio data by reusing technology icons and info", repo: "web-portfolio" },
-        { message: "fix: removed unnecessary values from portfolio-data", repo: "web-portfolio" },
-    ]
+    const [recentCommits, setRecentCommits] = useState<{ message: string; repository: string }[]>([]);
+    const [commitsShown, setCommitsShown] = useState<{ message: string; repository: string }[]>([]);
+    const [showAll, setShowAll] = useState(false);
 
-    let commits : Array<any>;
-
-    const githubResponse = await fetch(`https://api.github.com/users/${username}/events/public?per_page=100`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-            }
+    useEffect(() => {
+        async function fetchCommits() {
+            const commits = await getRecentCommits(username);
+            console.log(commits);
+            setRecentCommits(commits.slice(0, 15));
+            setCommitsShown(commits.slice(0, 5));
         }
-    )
 
-    if (githubResponse.ok) {
-        const lastEvents = await githubResponse.json();
-        const lastCommits = lastEvents.filter((event: any) => event.type == "PushEvent").slice(0, 5);
-
-        console.log("COMMITS ");
-        console.log(lastCommits);
-
-    } else {
-        return (<></>);
-    }
+        fetchCommits();
+    }, [username]);
 
     return (
 
         <section className="flex flex-col items-center justify-center w-full px-2 my-4" id="last-commits">
-            {exampleCommits.map((commit, key) => (
+            {commitsShown.map((commit, key) => (
                 <div className={`squares-aligned w-full`} key={key}>
-                    <div className={`relative bg-accent-orange h-full ${key == exampleCommits.length - 1 ? `rounded-b pb-16` : ''}`}>
+                    <div className={`relative bg-accent-orange h-full ${key == commitsShown.length - 1 ? `rounded-b pb-16` : ''}`}>
                         <div className="absolute aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b border-solid dark:border-third-dark border-dark commit-timeline-point">
 
                         </div>
                     </div>
-                    <a href={`#${key}`} className={`pl-8 dark:text-light hover:text-accent-orange ${key == exampleCommits.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repo}</a>
+                    <a href={`#${key}`} className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</a>
                 </div>
             ))}
-
-            <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid dark:border-third-dark border-dark">More</button>
+            {!showAll && (
+                <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid dark:border-third-dark border-dark"
+                    onClick={() => {
+                        setCommitsShown(recentCommits);
+                        setShowAll(true);
+                    }}>More</button>
+            )}
         </section>
     );
 }
