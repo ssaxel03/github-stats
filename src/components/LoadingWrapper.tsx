@@ -5,6 +5,7 @@ import Commits from "./RecentCommitsComponent";
 import Stats from "./UserStatsComponent";
 import Languages from "./TopLanguagesComponent";
 import Footer from "./FooterComponent";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Loading({
     username,
@@ -29,6 +30,8 @@ export default function Loading({
                 </div>
             </div>
             <div hidden={!(loaded >= 4)} className="flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-4">
+
+                <ThemeToggle />
 
                 <Header username={username} increaseLoaded={increaseLoaded} />
 

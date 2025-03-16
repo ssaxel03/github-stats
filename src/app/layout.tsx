@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -12,14 +13,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="dark" lang="en">
-      <head>
-        <meta name="viewport" content="width=device-width" />
-        </head>
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark break-words text-wrap text-justify`}
       >
-        {children}
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
