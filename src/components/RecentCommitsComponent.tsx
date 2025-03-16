@@ -28,7 +28,7 @@ export default function Commits({
 
     return (
 
-        <section className="flex flex-col items-center justify-center w-full px-2 my-4" id="last-commits">
+        <section className="flex flex-col items-center justify-center w-full px-4 my-4" id="last-commits">
             {commitsShown.map((commit, key) => (
                 <div className={`squares-aligned w-full`} key={key}>
                     <div className={`relative bg-accent-orange h-full ${key == commitsShown.length - 1 ? `rounded-b pb-16` : ''}`}>

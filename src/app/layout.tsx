@@ -13,8 +13,11 @@ export default function RootLayout({
 }>) {
   return (
     <html className="dark" lang="en">
+      <head>
+        <meta name="viewport" content="width=device-width" />
+        </head>
       <body
-        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark`}
+        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark break-words text-justify`}
       >
         {children}
       </body>

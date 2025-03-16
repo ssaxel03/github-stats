@@ -15,6 +15,7 @@
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+  overflow-wrap: break-word;
 }
 
 .squares-aligned {
@@ -26,8 +27,4 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-}
-
-.cenas {
-  color: #e3561e;
 }

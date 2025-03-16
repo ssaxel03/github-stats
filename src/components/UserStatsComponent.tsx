@@ -33,7 +33,7 @@ export default function Stats({
         <>
             {
                 !(userStats.totalContributions == 0) && (
-                    <section className="flex flex-col gap-4 items-center justify-center w-full my-4" id="info">
+                    <section className="flex flex-col gap-4 items-center justify-center w-full my-4 px-2" id="info">
 
                         <div className="flex flex-row items-center justify-center w-full gap-6">
                             <div className="aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b-2 border-solid dark:border-third-dark border-dark"></div>
