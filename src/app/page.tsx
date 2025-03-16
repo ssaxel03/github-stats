@@ -1,7 +1,4 @@
-import Header from "@/components/HeaderComponent";
-import Commits from "@/components/RecentCommitsComponent";
-import Stats from "@/components/UserStatsComponent";
-import Languages from "@/components/TopLanguagesComponent";
+import ThemeToggle from "@/components/ThemeToggle";
 import Loading from "@/components/LoadingWrapper";
 
 export default function Home() {

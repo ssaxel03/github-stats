@@ -29,7 +29,7 @@ export default function Loading({
                     </div>
                 </div>
             </div>
-            <div hidden={!(loaded >= 4)} className="flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-4">
+            <div hidden={!(loaded >= 4)} className="relative flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-4">
 
                 <ThemeToggle />
 
