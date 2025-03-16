@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getUserStats } from "@/utils/fetcher";
 import { format } from "@/utils/numberFormatter";
 
@@ -11,23 +11,18 @@ export default function Stats({
     increaseLoaded: () => void;
 }>) {
 
-    const userStats: {
-        stars: number;
-        totalCommits: number;
-        commitsThisYear: number;
-        totalContributions: number;
-        contributionsThisYear: number;
-    } = {
+    const [userStats, useUserStats] = useState({
         stars: 0,
         totalCommits: 0,
         commitsThisYear: 0,
         totalContributions: 0,
         contributionsThisYear: 0,
-    };
+    });
 
     useEffect(() => {
         async function fetchCommits() {
-            const userStats = await getUserStats(username);
+            const fetch = await getUserStats(username);
+            useUserStats(fetch);
             increaseLoaded();
         }
 
