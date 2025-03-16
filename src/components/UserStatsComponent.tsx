@@ -15,7 +15,7 @@ export default function Stats({
         stars: 0,
         totalCommits: 0,
         commitsThisYear: 0,
-        totalContributions: 0,
+        totalContributions: -1,
         contributionsThisYear: 0,
     });
 
@@ -32,7 +32,7 @@ export default function Stats({
     return (
         <>
             {
-                !(userStats.totalContributions == 0) && (
+                !(userStats.totalContributions == -1) && (
                     <section className="flex flex-col gap-4 items-center justify-center w-full my-4 px-2" id="info">
 
                         <div className="flex flex-row items-center justify-center w-full gap-6">
