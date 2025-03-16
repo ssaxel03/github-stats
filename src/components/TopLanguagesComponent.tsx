@@ -29,8 +29,12 @@ export default function Languages({
 
         <section className="flex flex-col items-center justify-center w-full px-2 my-4" id="last-commits">
             {languagesShown.map((language, key) => (
-                <div key={key} className="w-full flex flex-col items-start gap-2">
-                    <p>{language.name}</p>
+                <div key={key} className="w-full flex flex-col gap-2">
+                    <div className="flex flex-row items-center justify-between">
+                        <p>{language.name}</p>
+                        <p>{language.percent} %</p>
+                    </div>
+
                     <div className="w-full h-4 rounded-md border-b-2 border-solid dark:border-third-dark border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
                         <div
                             className="h-full rounded-r-md border-b border-solid border-dark"
