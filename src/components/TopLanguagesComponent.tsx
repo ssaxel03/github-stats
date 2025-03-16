@@ -37,7 +37,7 @@ export default function Languages({
 
                     <div className="w-full h-4 rounded-md border-b-2 border-solid dark:border-third-dark border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
                         <div
-                            className="h-full rounded-r-md border-b border-solid border-dark"
+                            className="h-full rounded-r-md border-b-2 border-solid dark:border-third-dark border-dark"
                             style={{ width: `${language.percent}%`, background: language.color }}
                         ></div>
                     </div>
