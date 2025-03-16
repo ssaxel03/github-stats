@@ -40,7 +40,7 @@ export default function Commits({
                 </div>
             ))}
             {!showAll && (commitsShown.length < recentCommits.length) && (
-                <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-solid dark:border-third-dark border-dark"
+                <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
                     onClick={() => {
                         setCommitsShown(recentCommits);
                         setShowAll(true);
