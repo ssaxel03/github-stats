@@ -35,9 +35,9 @@ export default function Languages({
                         <p>{language.percent} %</p>
                     </div>
 
-                    <div className="w-full h-4 rounded-md border-b-2 border-solid dark:border-third-dark border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
+                    <div className="w-full h-4 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
                         <div
-                            className="h-full rounded-r-md border-b-2 border-solid dark:border-third-dark border-dark"
+                            className="h-full rounded-r-md"
                             style={{ width: `${language.percent}%`, background: language.color }}
                         ></div>
                     </div>
