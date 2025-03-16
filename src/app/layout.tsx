@@ -17,7 +17,7 @@ export default function RootLayout({
         <meta name="viewport" content="width=device-width" />
         </head>
       <body
-        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark break-words text-justify`}
+        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark break-words text-wrap text-justify`}
       >
         {children}
       </body>
