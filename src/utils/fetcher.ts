@@ -22,6 +22,7 @@ interface GitHubEvent {
 interface CommitInfo {
     message: string;
     repository: string;
+    date: string;
 }
 
 interface UserStats {
@@ -77,33 +78,42 @@ export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
 // Returns the 15 most recent commits included in the last 100 events (REST API is more direct at getting the commit info even though it's slower due to
 // having to process the info on my end)
 // Will probably change in the future
+// Returns the 15 most recent commits, fetching more pages of events if necessary
+// Returns the 15 most recent commits using the GitHub Search API
 export async function getRecentCommits(username: string): Promise<CommitInfo[]> {
+    try {
+        // Use the GitHub Search API to find commits by the author
+        const searchUrl = `https://api.github.com/search/commits?q=author:${username}&sort=committer-date&order=desc&per_page=15`;
 
-    const githubResponse = await fetch(`https://api.github.com/users/${username}/events?per_page=100`, {
-        headers: {
-            Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+        const searchResponse = await fetch(searchUrl, {
+            headers: {
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+                'Accept': 'application/vnd.github.cloak-preview+json' // Required for commits search
+            }
+        });
+
+        if (!searchResponse.ok) {
+            console.error(`Failed to search commits: ${searchResponse.status}`);
+            return [];
         }
-    });
 
-    if (!githubResponse.ok) return [];
+        const searchData = await searchResponse.json();
 
-    const events: GitHubEvent[] = await githubResponse.json();
+        if (!searchData.items || !Array.isArray(searchData.items)) {
+            return [];
+        }
 
-    // Filter only PushEvent types
-    const pushEvents = events
-        .filter(event => event.type === "PushEvent" && event.public)
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-        .slice(0, 15);
+        // Extract commit information
+        const recentCommits: CommitInfo[] = searchData.items.map((item :any) => ({
+            message: item.commit.message,
+            repository: item.repository.full_name
+        }));
 
-    // Extract commit messages and repository names
-    const recentCommits: CommitInfo[] = pushEvents.flatMap(event =>
-        (event.payload.commits || []).map(commit => ({
-            message: commit.message,
-            repository: event.repo.name,
-        }))
-    );
-
-    return recentCommits.slice(0, 15);
+        return recentCommits;
+    } catch (error) {
+        console.error("Error fetching recent commits:", error);
+        return [];
+    }
 }
 
 // Template function for fetching GitHub GraphQL API
