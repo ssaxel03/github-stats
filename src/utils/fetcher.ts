@@ -83,7 +83,7 @@ export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
 export async function getRecentCommits(username: string): Promise<CommitInfo[]> {
     try {
         // Use the GitHub Search API to find commits by the author
-        const searchUrl = `https://api.github.com/search/commits?q=author:${username}&sort=committer-date&order=desc&per_page=15`;
+        const searchUrl = `https://api.github.com/search/commits?q=author:${username}+is:public&sort=committer-date&order=desc&per_page=15`;
 
         const searchResponse = await fetch(searchUrl, {
             headers: {
