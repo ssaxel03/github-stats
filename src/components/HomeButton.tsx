@@ -14,7 +14,7 @@ export default function HomeButton() {
     return (
         <button
             onClick={handleButton}
-            className="absolute left-4 top-4 h-[36px] aspect-square flex items-center justify-center dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light px-1 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
+            className="cursor-pointer absolute left-4 top-4 h-[36px] aspect-square flex items-center justify-center dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light px-1 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
         >
 
             <svg className="w-full h-full dark:fill-light fill-dark stroke-3 dark:stroke-light stroke-dark" viewBox="0 0 330.242 330.242" strokeWidth="0.0033024200000000004">

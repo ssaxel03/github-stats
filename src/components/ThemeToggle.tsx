@@ -16,7 +16,7 @@ export default function ThemeToggle() {
     return (
         <button
             onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
-            className="absolute right-4 top-4 h-[36px] aspect-square flex items-center justify-center dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light px-1 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
+            className="cursor-pointer absolute right-4 top-4 h-[36px] aspect-square flex items-center justify-center dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light px-1 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
         >
             {!(resolvedTheme === "dark") ?
                 <svg className="w-full h-full fill-dark stroke-dark" xmlns="http://www.w3.org/2000/svg" viewBox="-5.6 -5.6 67.20 67.20" transform="rotate(-15)">
