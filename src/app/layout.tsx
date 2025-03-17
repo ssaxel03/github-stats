@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark break-words text-wrap text-justify`}
+        className={`antialiased text-xl dark:bg-dark dark:text-light bg-light text-dark break-words whitespace-break-spaces text-wrap text-justify`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
