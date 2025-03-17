@@ -1,4 +1,60 @@
 import Loading from "@/components/LoadingWrapper";
+import { Metadata } from "next";
+
+/*
+export async function generateMetadata(
+  params: Promise<{ username: string }>,
+): Promise<Metadata> {
+
+  const { username } = await params;
+
+  return {
+    title: `${username} - GitHub Stats`,
+    description: `Check out ${username}'s activity on GitHub!`,
+    robots: "index, follow",
+    alternates: { canonical: "https://githubstats.ssaxel03.com" },
+    icons: "icon.svg",
+    openGraph: {
+      type: "website",
+      url: "https://githubstats.ssaxel03.com",
+      title: "GitHub Stats",
+      description: "Find out now what your favorite developers have been building.",
+      siteName: "GitHub Stats",
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: "card.jpg"
+    },
+  }
+}
+*/
+
+export async function generateMetadata(
+  { params }: { params: { username: string } },
+): Promise<Metadata> {
+  
+  const { username } = params; // No need for await
+
+  return {
+    title: `${username} - GitHub Stats`,
+    description: `Check out ${username}'s activity on GitHub!`,
+    robots: "index, follow",
+    alternates: { canonical: "https://githubstats.ssaxel03.com" },
+    icons: "icon.svg",
+    openGraph: {
+      type: "website",
+      url: "https://githubstats.ssaxel03.com",
+      title: `${username} - GitHub Stats`,
+      description: `Check out ${username}'s activity on GitHub.`,
+      siteName: "GitHub Stats",
+    },
+    twitter: {
+      card: "summary_large_image",
+      images: "card.jpg"
+    },
+  };
+}
+
 
 export default async function Home({ params }: {
   params: Promise<{ username: string }>
