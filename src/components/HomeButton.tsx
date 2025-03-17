@@ -1,8 +1,15 @@
 "use client";
+import { useRouter } from "next/navigation";
+import { FormEventHandler } from "react";
 
 export default function HomeButton() {
 
-    const handleButton = () => { }
+    const router = useRouter();
+
+    const handleButton: FormEventHandler = (e) => {
+        e.preventDefault();
+        router.push("/");
+    }
 
     return (
         <button
