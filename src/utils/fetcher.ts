@@ -83,26 +83,13 @@ export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
 export async function getRecentCommits(username: string): Promise<CommitInfo[]> {
     try {
 
-        // First, verify the user exists
-        const userCheckResponse = await fetch(`https://api.github.com/users/${username}`, {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
-            }
-        });
-
-        // If user doesn't exist, return empty array immediately
-        if (!userCheckResponse.ok) {
-            console.error(`User ${username} not found: ${userCheckResponse.status}`);
-            return [];
-        }
-
         // Use the GitHub Search API to find commits by the author
         const searchUrl = `https://api.github.com/search/commits?q=author:${username}+is:public&sort=committer-date&order=desc&per_page=15`;
 
         const searchResponse = await fetch(searchUrl, {
             headers: {
                 Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                'Accept': 'application/vnd.github.cloak-preview+json' // Required for commits search
+                'Accept': 'application/vnd.github.cloak-preview+json'
             }
         });
 
@@ -113,7 +100,7 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
 
         const searchData = await searchResponse.json();
 
-        if (!searchData.items || !Array.isArray(searchData.items)) {
+        if (searchData.incomplete_results) {
             return [];
         }
 
