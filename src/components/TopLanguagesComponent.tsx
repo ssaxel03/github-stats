@@ -27,7 +27,7 @@ export default function Languages({
 
     return (
 
-        <section className="flex flex-col items-center justify-center w-full px-2 my-4" id="last-commits">
+        <section className="flex flex-col items-center gap-2 justify-center w-full px-2 my-4" id="top-languages">
             {languagesShown.map((language, key) => (
                 <div key={key} className="w-full flex flex-col gap-2">
                     <div className="flex flex-row items-center justify-between">

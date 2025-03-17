@@ -8,7 +8,7 @@ export default function Commits({
     username: string;
     increaseLoaded: () => void;
 }>) {
-    
+
 
     const [recentCommits, setRecentCommits] = useState<{ message: string; repository: string }[]>([]);
     const [commitsShown, setCommitsShown] = useState<{ message: string; repository: string }[]>([]);
@@ -36,7 +36,9 @@ export default function Commits({
 
                         </div>
                     </div>
-                    <a target="_blank" href={`https://github.com/${commit.repository}`} className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</a>
+                    <a className="max-w-full" target="_blank" href={`https://github.com/${commit.repository}`}>
+                        <p className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</p>
+                    </a>
                 </div>
             ))}
             {!showAll && (commitsShown.length < recentCommits.length) && (

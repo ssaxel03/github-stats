@@ -20,6 +20,7 @@ body {
 
 .squares-aligned {
   display: grid;
+  overflow-wrap: anywhere;
   grid-template-columns: 7px 1fr;
 }
 
