@@ -21,7 +21,13 @@ export default function Header({
         async function fetchCommits() {
             const fetch = await getHeaderInfo(username);
             setProfile(fetch);
-            increaseLoaded();
+            await Promise.all(
+                [...Array(4)].map((_, i) =>
+                    new Promise(() =>
+                        increaseLoaded()
+                    )
+                )
+            );
         }
 
         fetchCommits();

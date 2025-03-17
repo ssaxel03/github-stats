@@ -82,6 +82,20 @@ export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
 // Returns the 15 most recent commits using the GitHub Search API
 export async function getRecentCommits(username: string): Promise<CommitInfo[]> {
     try {
+
+        // First, verify the user exists
+        const userCheckResponse = await fetch(`https://api.github.com/users/${username}`, {
+            headers: {
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`
+            }
+        });
+
+        // If user doesn't exist, return empty array immediately
+        if (!userCheckResponse.ok) {
+            console.error(`User ${username} not found: ${userCheckResponse.status}`);
+            return [];
+        }
+
         // Use the GitHub Search API to find commits by the author
         const searchUrl = `https://api.github.com/search/commits?q=author:${username}+is:public&sort=committer-date&order=desc&per_page=15`;
 
@@ -104,7 +118,7 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
         }
 
         // Extract commit information
-        const recentCommits: CommitInfo[] = searchData.items.map((item :any) => ({
+        const recentCommits: CommitInfo[] = searchData.items.map((item: any) => ({
             message: item.commit.message,
             repository: item.repository.full_name
         }));
