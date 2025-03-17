@@ -10,9 +10,9 @@ export default function Home() {
 
         <ThemeToggle />
 
-        <h1 className="text-2xl text-center font-bold my-4">Welcome to GitHub Stats</h1>
+        <h1 className="text-2xl text-center font-bold my-8">Welcome to GitHub Stats</h1>
 
-        <p className="text-center">Type a username below to see what they&apos;ve been doing.</p>
+        <p className="text-center">Type a username below to see what they&apos;ve been building.</p>
 
         <NavigationForm />
 

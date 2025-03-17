@@ -29,7 +29,7 @@ export default function Loading({
                 <HomeButton />
 
                 Loading... [{loaded}/4]
-                <div className="w-full max-w-[320px] dark:bg-second-dark bg-second-light h-4 rounded-md overflow-hidden">
+                <div className="w-full max-w-[320px] dark:bg-second-dark bg-second-light h-4 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark overflow-hidden">
                     <div className="h-full bg-accent-orange" style={{ width: `${loaded * 25}%` }}>
 
                     </div>

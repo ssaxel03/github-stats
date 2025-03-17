@@ -19,17 +19,20 @@ export default function Header({
 
     useEffect(() => {
         async function fetchCommits() {
+            console.log("fetching header");
+
             const fetch = await getHeaderInfo(username);
+
             setProfile(fetch);
-            if (profile.login == "NOT FOUND") {
-                await Promise.all(
-                    [...Array(4)].map((_, i) =>
-                        new Promise(() =>
-                            increaseLoaded()
-                        )
-                    )
-                );
+
+            if (fetch.login == "NOT FOUND") {
+                
+                increaseLoaded();
+                increaseLoaded();
+                increaseLoaded();
+                increaseLoaded();
             } else {
+
                 increaseLoaded();
             }
         }
