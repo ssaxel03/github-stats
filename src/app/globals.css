@@ -29,3 +29,8 @@ body {
   left: 50%;
   transform: translateX(-50%);
 }
+
+::selection {
+  color: #E3E3E3;
+  background-color: #E3561E;
+}
