@@ -27,29 +27,35 @@ export default function Languages({
 
     return (
 
-        <section className="flex flex-col items-center gap-2 justify-center w-full px-2 my-4" id="top-languages">
-            {languagesShown.map((language, key) => (
-                <div key={key} className="w-full flex flex-col gap-2">
-                    <div className="flex flex-row items-center justify-between">
-                        <p>{language.name}</p>
-                        <p>{language.percent} %</p>
-                    </div>
+        <>
 
-                    <div className="w-full h-4 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
-                        <div
-                            className="h-full rounded-r-md"
-                            style={{ width: `${language.percent}%`, background: language.color }}
-                        ></div>
-                    </div>
-                </div>
-            ))}
-            {!showAll && (languagesShown.length < topLanguages.length) && (
-                <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
-                    onClick={() => {
-                        setShowAll(true);
-                        setLanguagesShown(topLanguages);
-                    }}>More</button>
+            {languagesShown.length > 0 && (
+                <section className="flex flex-col items-center gap-2 justify-center w-full px-2 my-4" id="top-languages">
+                    {languagesShown.map((language, key) => (
+                        <div key={key} className="w-full flex flex-col gap-2">
+                            <div className="flex flex-row items-center justify-between">
+                                <p>{language.name}</p>
+                                <p>{language.percent} %</p>
+                            </div>
+
+                            <div className="w-full h-4 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark h-6 dark:bg-second-dark bg-second-light overflow-hidden">
+                                <div
+                                    className="h-full rounded-r-md"
+                                    style={{ width: `${language.percent}%`, background: language.color }}
+                                ></div>
+                            </div>
+                        </div>
+                    ))}
+                    {!showAll && (languagesShown.length < topLanguages.length) && (
+                        <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
+                            onClick={() => {
+                                setShowAll(true);
+                                setLanguagesShown(topLanguages);
+                            }}>More</button>
+                    )}
+                </section>
             )}
-        </section>
+
+        </>
     );
 }

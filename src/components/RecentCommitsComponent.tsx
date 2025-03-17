@@ -27,27 +27,32 @@ export default function Commits({
     }, [username]);
 
     return (
+        <>
+            {commitsShown.length > 0 && (
+                <section className="flex flex-col items-center justify-center w-full px-4 my-4" id="last-commits">
+                    {commitsShown.map((commit, key) => (
+                        <div className={`squares-aligned w-full`} key={key}>
+                            <div className={`relative bg-accent-orange h-full border-r border-solid dark:border-third-dark border-dark ${key == commitsShown.length - 1 ? `border-b rounded-b pb-16` : ''}`}>
+                                <div className="absolute aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark commit-timeline-point">
 
-        <section className="flex flex-col items-center justify-center w-full px-4 my-4" id="last-commits">
-            {commitsShown.map((commit, key) => (
-                <div className={`squares-aligned w-full`} key={key}>
-                    <div className={`relative bg-accent-orange h-full border-r border-solid dark:border-third-dark border-dark ${key == commitsShown.length - 1 ? `border-b rounded-b pb-16` : ''}`}>
-                        <div className="absolute aspect-square h-6 dark:bg-second-dark bg-second-light rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark commit-timeline-point">
-
+                                </div>
+                            </div>
+                            <a className="max-w-full" target="_blank" href={`https://github.com/${commit.repository}`}>
+                                <p className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</p>
+                            </a>
                         </div>
-                    </div>
-                    <a className="max-w-full" target="_blank" href={`https://github.com/${commit.repository}`}>
-                        <p className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</p>
-                    </a>
-                </div>
-            ))}
-            {!showAll && (commitsShown.length < recentCommits.length) && (
-                <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
-                    onClick={() => {
-                        setCommitsShown(recentCommits);
-                        setShowAll(true);
-                    }}>More</button>
+                    ))}
+                    {!showAll && (commitsShown.length < recentCommits.length) && (
+                        <button className="dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light my-4 px-16 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
+                            onClick={() => {
+                                setCommitsShown(recentCommits);
+                                setShowAll(true);
+                            }}>More</button>
+                    )}
+                </section>
             )}
-        </section>
+
+        </>
+
     );
 }
