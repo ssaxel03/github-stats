@@ -21,7 +21,7 @@ export default function NavigationForm() {
         <form onSubmit={handleSubmit} className="flex flex-row items-center justify-center gap-2">
             <input
                 placeholder="torvalds"
-                className="w-full max-w-[320px] focus:outline-0 dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light dark:focus:bg-third-dark focus:bg-ligth my-4 px-1        py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
+                className="w-full max-w-[320px] focus:outline-0 dark:bg-second-dark bg-second-light dark:hover:bg-third-dark hover:bg-light dark:focus:bg-third-dark focus:bg-ligth my-4 px-1 py-1 rounded-md border-b-2 border-r-2 border-solid dark:border-third-dark border-dark"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))} />

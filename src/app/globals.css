@@ -34,3 +34,9 @@ body {
   color: #E3E3E3;
   background-color: #E3561E;
 }
+
+@media (max-height: 400px) {
+  .footer {
+      display: none;
+  }
+}

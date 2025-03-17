@@ -1,12 +1,21 @@
 import Footer from "@/components/FooterComponent";
 import NavigationForm from "@/components/NavigationForm";
 import ThemeToggle from "@/components/ThemeToggle";
+import { Viewport } from "next";
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  interactiveWidget: "resizes-content"
+}
 
 export default function Home() {
 
   return (<>
     <main className="relative flex flex-col justify-center items-center w-full min-h-[100svh]">
-      <div className="min-h-[100svh] relative flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-4">
+      <div className="h-[100svh] relative flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-4">
 
         <ThemeToggle />
 
