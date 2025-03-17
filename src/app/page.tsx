@@ -1,3 +1,4 @@
+import Footer from "@/components/FooterComponent";
 import NavigationForm from "@/components/NavigationForm";
 import ThemeToggle from "@/components/ThemeToggle";
 
@@ -14,6 +15,8 @@ export default function Home() {
         <p className="text-center">Type a username below to see what they've been doing.</p>
 
         <NavigationForm />
+
+        <Footer />
 
       </div>
     </main >
