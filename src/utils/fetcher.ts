@@ -33,7 +33,7 @@ interface UserStats {
 }
 
 interface GitHubUser {
-    contributionsCollection: {
+    contributionsAllTime: {
         totalCommitContributions: number;
         contributionCalendar: { totalContributions: number };
     };
@@ -130,59 +130,128 @@ const fetchGraphQL = async <T, V = Record<string, unknown>>(query: string, varia
 export async function getUserStats(username: string): Promise<UserStats> {
     const currentYear = new Date().getFullYear();
     const sinceDate = `${currentYear}-01-01T00:00:00Z`;
-
+    
     try {
-        // Step 1: Get contributions and commits
-        const profileQuery = `
-        query ($username: String!, $since: DateTime!) {
-            user(login: $username) {
-                contributionsCollection {
-                    totalCommitContributions
-                    contributionCalendar {
-                        totalContributions
-                    }
-                }
-                contributionsThisYear: contributionsCollection(from: $since) {
-                    totalCommitContributions
-                    contributionCalendar {
-                        totalContributions
-                    }
-                }
+      // Step 1: Get contribution years for the user
+      const contributionYearsQuery = `
+        query ($username: String!) {
+          user(login: $username) {
+            contributionsCollection {
+              contributionYears
             }
+          }
         }`;
-
-        const profileData = await fetchGraphQL<GraphQLResponse>(profileQuery, { username, since: sinceDate });
-
-        if (!profileData || !profileData.user) {
-            throw new Error("User not found");
+        
+      const yearsData = await fetchGraphQL<{
+        user: { contributionsCollection: { contributionYears: number[] } }
+      }>(contributionYearsQuery, { username });
+      
+      if (!yearsData || !yearsData.user) {
+        throw new Error("User not found");
+      }
+      
+      const contributionYears = yearsData.user.contributionsCollection.contributionYears;
+      
+      // Step 2: Get current year contributions (for the "this year" metrics)
+      const currentYearQuery = `
+        query ($username: String!, $since: DateTime!) {
+          user(login: $username) {
+            contributionsThisYear: contributionsCollection(from: $since, includePrivateContributions: true) {
+              totalCommitContributions
+              contributionCalendar {
+                totalContributions
+              }
+            }
+          }
+        }`;
+        
+      const currentYearData = await fetchGraphQL<{
+        user: { 
+          contributionsThisYear: {
+            totalCommitContributions: number;
+            contributionCalendar: { totalContributions: number };
+          }
         }
-
-        const totalContributions = profileData.user.contributionsCollection.contributionCalendar.totalContributions || 0;
-        const contributionsThisYear = profileData.user.contributionsThisYear.contributionCalendar.totalContributions || 0;
-        const totalCommits = profileData.user.contributionsCollection.totalCommitContributions || 0;
-        const commitsThisYear = profileData.user.contributionsThisYear.totalCommitContributions || 0;
-        const stars = await fetchAllStars(username);
-
-        // Return the combined stats
-        return {
-            stars,
-            totalCommits,
-            commitsThisYear,
-            totalContributions,
-            contributionsThisYear
-        };
+      }>(currentYearQuery, { username, since: sinceDate });
+      
+      if (!currentYearData || !currentYearData.user) {
+        throw new Error("Failed to fetch current year data");
+      }
+      
+      const commitsThisYear = currentYearData.user.contributionsThisYear.totalCommitContributions || 0;
+      const contributionsThisYear = currentYearData.user.contributionsThisYear.contributionCalendar.totalContributions || 0;
+      
+      // Step 3: Fetch contributions for each year and aggregate
+      let totalCommits = 0;
+      let totalContributions = 0;
+      
+      // Process each year in parallel for better performance
+      const yearPromises = contributionYears.map(async (year) => {
+        const startDate = `${year}-01-01T00:00:00Z`;
+        const endDate = `${year}-12-31T23:59:59Z`;
+        
+        const yearQuery = `
+          query ($username: String!, $startDate: DateTime!, $endDate: DateTime!) {
+            user(login: $username) {
+              contributionsCollection(from: $startDate, to: $endDate, includePrivateContributions: true) {
+                totalCommitContributions
+                contributionCalendar {
+                  totalContributions
+                }
+              }
+            }
+          }`;
+          
+        const yearData = await fetchGraphQL<{
+          user: {
+            contributionsCollection: {
+              totalCommitContributions: number;
+              contributionCalendar: { totalContributions: number };
+            }
+          }
+        }>(yearQuery, { username, startDate, endDate });
+        
+        if (yearData && yearData.user) {
+          return {
+            commits: yearData.user.contributionsCollection.totalCommitContributions || 0,
+            contributions: yearData.user.contributionsCollection.contributionCalendar.totalContributions || 0
+          };
+        }
+        
+        return { commits: 0, contributions: 0 };
+      });
+      
+      const yearResults = await Promise.all(yearPromises);
+      
+      // Sum up all contributions and commits
+      for (const result of yearResults) {
+        totalCommits += result.commits;
+        totalContributions += result.contributions;
+      }
+      
+      // Step 4: Get stars
+      const stars = await fetchAllStars(username);
+      
+      // Return the combined stats
+      return {
+        stars,
+        totalCommits,
+        commitsThisYear,
+        totalContributions,
+        contributionsThisYear
+      };
     } catch (error) {
-        console.error("Error fetching user stats:", error);
-        // Return default values in case of error
-        return {
-            stars: 0,
-            totalCommits: 0,
-            commitsThisYear: 0,
-            totalContributions: 0,
-            contributionsThisYear: 0
-        };
+      console.error("Error fetching user stats:", error);
+      // Return default values in case of error
+      return {
+        stars: 0,
+        totalCommits: 0,
+        commitsThisYear: 0,
+        totalContributions: -1,
+        contributionsThisYear: 0
+      };
     }
-}
+  }
 
 // Returns all stars a given user has
 async function fetchAllStars(username: string, cursor: string | null = null, initialCount: number = 0): Promise<number> {
