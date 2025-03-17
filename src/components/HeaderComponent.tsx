@@ -10,7 +10,7 @@ export default function Header({
     increaseLoaded: () => void;
 }>) {
 
-    const [profile, useProfile] = useState({
+    const [profile, setProfile] = useState({
         avatar_url: "not-found-picture-light.svg",
         avatar_url_dark: "not-found-picture-dark.svg",
         login: "init",
@@ -20,7 +20,7 @@ export default function Header({
     useEffect(() => {
         async function fetchCommits() {
             const fetch = await getHeaderInfo(username);
-            useProfile(fetch);
+            setProfile(fetch);
             increaseLoaded();
         }
 

@@ -12,7 +12,7 @@ export default function Home() {
 
         <h1 className="text-2xl text-center font-bold my-4">Welcome to GitHub Stats</h1>
 
-        <p className="text-center">Type a username below to see what they've been doing.</p>
+        <p className="text-center">Type a username below to see what they&apos;ve been doing.</p>
 
         <NavigationForm />
 

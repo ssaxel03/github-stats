@@ -11,7 +11,7 @@ export default function Stats({
     increaseLoaded: () => void;
 }>) {
 
-    const [userStats, useUserStats] = useState({
+    const [userStats, setUserStats] = useState({
         stars: 0,
         totalCommits: 0,
         commitsThisYear: 0,
@@ -22,7 +22,7 @@ export default function Stats({
     useEffect(() => {
         async function fetchCommits() {
             const fetch = await getUserStats(username);
-            useUserStats(fetch);
+            setUserStats(fetch);
             increaseLoaded();
         }
 
