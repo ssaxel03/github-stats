@@ -2,8 +2,6 @@ import { ImageResponse } from 'next/og';
 import { readFile } from 'node:fs/promises'
 import { join } from 'path';
 
-export const runtime = 'edge'; // Enables edge rendering for performance
-
 export const alt = 'GitHub Stats OG card';
 export const size = {
     width: 1200,
