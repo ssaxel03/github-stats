@@ -15,14 +15,15 @@ export async function generateMetadata(
     icons: "icon.svg",
     openGraph: {
       type: "website",
-      url: "https://githubstats.ssaxel03.com",
+      url: `githubstats.ssaxel03.com/${username}`,
       title: `${username} - GitHub Stats`,
       description: `Check out ${username}'s activity on GitHub.`,
       siteName: "GitHub Stats",
+      images: `githubstats.ssaxel03.com/${username}/opengraphImage`
     },
     twitter: {
       card: "summary_large_image",
-      images: "card.jpg"
+      images: `githubstats.ssaxel03.com/${username}/opengraphImage`
     },
   };
 }
