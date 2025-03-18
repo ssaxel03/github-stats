@@ -7,18 +7,6 @@ interface ProfileInfo {
     html_url: string;
 }
 
-interface GitHubEvent {
-    type: string;
-    public: boolean;
-    created_at: string;
-    repo: {
-        name: string;
-    };
-    payload: {
-        commits?: { message: string }[];
-    };
-}
-
 interface CommitInfo {
     message: string;
     repository: string;
@@ -33,20 +21,13 @@ interface UserStats {
     contributionsThisYear: number;
 }
 
-interface GitHubUser {
-    contributionsAllTime: {
-        totalCommitContributions: number;
-        restrictedContributionsCount: number,
-        contributionCalendar: { totalContributions: number };
-    };
-    contributionsThisYear: {
-        totalCommitContributions: number;
-        contributionCalendar: { totalContributions: number };
-    };
-}
-
-interface GraphQLResponse {
-    user: GitHubUser | null;
+interface CommitResponse {
+    commit: {
+        message: string,
+    },
+    repository: {
+        full_name: string,
+    }
 }
 
 // Returns the avatar url, login and url of the user's profile
@@ -105,7 +86,7 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
         }
 
         // Extract commit information
-        const recentCommits: CommitInfo[] = searchData.items.map((item: any) => ({
+        const recentCommits: CommitInfo[] = searchData.items.map((item: CommitResponse) => ({
             message: item.commit.message,
             repository: item.repository.full_name
         }));

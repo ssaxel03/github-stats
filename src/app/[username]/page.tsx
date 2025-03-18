@@ -1,11 +1,15 @@
 import Loading from "@/components/LoadingWrapper";
 import { Metadata } from "next";
 
+type Props = {
+  params: Promise<{ username: string }>
+}
+
 export async function generateMetadata(
-  { params }: { params: { username: string } },
+  { params }: Props,
 ): Promise<Metadata> {
   
-  const { username } = params; // No need for await
+  const { username } = await params;
 
   return {
     title: `${username} - GitHub Stats`,
