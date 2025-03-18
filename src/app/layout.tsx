@@ -12,19 +12,19 @@ export const metadata: Metadata = {
   creator: "Axel Soares",
   publisher: "Axel Soares",
   robots: "index, follow",
-  alternates: { canonical: "https://githubstats.ssaxel03.com" },
+  alternates: { canonical: "https://github-stats.ssaxel03.com" },
   icons: "icon.svg",
   openGraph: {
     type: "website",
-    url: "https://githubstats.ssaxel03.com",
+    url: "https://github-stats.ssaxel03.com",
     title: "GitHub Stats",
     description: "Find out now what your favorite developers have been building.",
     siteName: "GitHub Stats",
-    images: `opengraphImage`
+    images: `https://github-stats.ssaxel03.com/opengraphImage`
   },
   twitter: {
     card: "summary_large_image",
-    images: "opengraphImage"
+    images: "https://github-stats.ssaxel03.com/opengraphImage"
   },
 
 };

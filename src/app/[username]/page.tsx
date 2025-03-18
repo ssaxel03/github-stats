@@ -15,19 +15,19 @@ export async function generateMetadata(
     title: `${username} - GitHub Stats`,
     description: `Check out ${username}'s activity on GitHub!`,
     robots: "index, follow",
-    alternates: { canonical: "https://githubstats.ssaxel03.com" },
+    alternates: { canonical: "https://github-stats.ssaxel03.com" },
     icons: "icon.svg",
     openGraph: {
       type: "website",
-      url: `githubstats.ssaxel03.com/${username}`,
+      url: `https://github-stats.ssaxel03.com/${username}`,
       title: `${username} - GitHub Stats`,
       description: `Check out ${username}'s activity on GitHub.`,
       siteName: "GitHub Stats",
-      images: `${username}/opengraphImage`
+      images: `https://github-stats.ssaxel03.com/${username}/opengraphImage`
     },
     twitter: {
       card: "summary_large_image",
-      images: `${username}/opengraphImage`
+      images: `https://github-stats.ssaxel03.com/${username}/opengraphImage`
     },
   };
 }
