@@ -20,11 +20,11 @@ export const metadata: Metadata = {
     title: "GitHub Stats",
     description: "Find out now what your favorite developers have been building.",
     siteName: "GitHub Stats",
-    images: `githubstats.ssaxel03.com/opengraphImage`
+    images: `opengraphImage`
   },
   twitter: {
     card: "summary_large_image",
-    images: "githubstats.ssaxel03.com/opengraphImage"
+    images: "opengraphImage"
   },
 
 };

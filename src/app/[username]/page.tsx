@@ -23,11 +23,11 @@ export async function generateMetadata(
       title: `${username} - GitHub Stats`,
       description: `Check out ${username}'s activity on GitHub.`,
       siteName: "GitHub Stats",
-      images: `githubstats.ssaxel03.com/${username}/opengraphImage`
+      images: `${username}/opengraphImage`
     },
     twitter: {
       card: "summary_large_image",
-      images: `githubstats.ssaxel03.com/${username}/opengraphImage`
+      images: `${username}/opengraphImage`
     },
   };
 }
