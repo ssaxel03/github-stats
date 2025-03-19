@@ -20,7 +20,6 @@ export async function GET(request: Request) {
     const hasUsername = searchParams.has("username");
 
     let text: string = "GitHub Stats";
-    let img_url: string = "https://github-stats.ssaxel03.com/icon.svg";
 
     if (hasUsername) {
         const { login } = await getHeaderInfo(searchParams.get("username"));
