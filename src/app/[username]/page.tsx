@@ -1,4 +1,5 @@
 import Loading from "@/components/LoadingWrapper";
+import { getHeaderInfo } from "@/utils/fetcher";
 import { Metadata } from "next";
 
 type Props = {
@@ -11,23 +12,25 @@ export async function generateMetadata(
 
   const { username } = await params;
 
+  const { login } = await getHeaderInfo(username);
+
   return {
-    title: `${username} - GitHub Stats`,
-    description: `Check out ${username}'s activity on GitHub!`,
+    title: `${login} - GitHub Stats`,
+    description: `Check out ${login}'s activity on GitHub!`,
     robots: "index, follow",
     alternates: { canonical: "https://github-stats.ssaxel03.com" },
     icons: "icon.svg",
     openGraph: {
       type: "website",
-      url: `https://github-stats.ssaxel03.com/${username}`,
-      title: `${username} - GitHub Stats`,
-      description: `Check out ${username}'s activity on GitHub.`,
+      url: `https://github-stats.ssaxel03.com/${login}`,
+      title: `${login} - GitHub Stats`,
+      description: `Check out ${login}'s activity on GitHub.`,
       siteName: "GitHub Stats",
-      images: `https://github-stats.ssaxel03.com/api/og?username=${username}`
+      images: `https://github-stats.ssaxel03.com/api/og?username=${login}`
     },
     twitter: {
       card: "summary_large_image",
-      images: `https://github-stats.ssaxel03.com/api/og?username=${username}`
+      images: `https://github-stats.ssaxel03.com/api/og?username=${login}`
     },
   };
 }
