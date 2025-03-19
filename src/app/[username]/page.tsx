@@ -8,7 +8,7 @@ type Props = {
 export async function generateMetadata(
   { params }: Props,
 ): Promise<Metadata> {
-  
+
   const { username } = await params;
 
   return {
@@ -39,10 +39,7 @@ export default async function Home({ params }: {
 
   const { username } = await params;
 
-  return (<>
-    <main className="relative flex flex-col justify-center items-center w-full min-h-[100svh]">
-      <Loading username={username} />
-    </main >
-  </>
+  return (
+    <Loading username={username} />
   );
 }

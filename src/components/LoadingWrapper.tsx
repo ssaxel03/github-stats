@@ -4,8 +4,6 @@ import Header from "./HeaderComponent";
 import Commits from "./RecentCommitsComponent";
 import Stats from "./UserStatsComponent";
 import Languages from "./TopLanguagesComponent";
-import Footer from "./FooterComponent";
-import ThemeToggle from "./ThemeToggle";
 import HomeButton from "./HomeButton";
 
 export default function Loading({
@@ -22,9 +20,7 @@ export default function Loading({
 
     return (
         <>
-            <div hidden={loaded >= 4} className="min-h-[100svh] relative flex flex-col gap-4 items-center justify-center w-full max-w-[800px] py-16 px-4">
-
-                <ThemeToggle />
+            <div hidden={loaded >= 4} className="w-full flex flex-col gap-2 justify-center items-center">
 
                 <HomeButton />
 
@@ -35,9 +31,8 @@ export default function Loading({
                     </div>
                 </div>
             </div>
-            <div hidden={!(loaded >= 4)} className="min-h-[100svh] relative flex flex-col justify-center items-center w-full max-w-[800px] py-16 px-4">
 
-                <ThemeToggle />
+            <div hidden={!(loaded >= 4)} className="w-full h-full">
 
                 <HomeButton />
 
@@ -49,7 +44,6 @@ export default function Loading({
 
                 <Languages username={username} increaseLoaded={increaseLoaded} />
             </div>
-            <Footer />
         </>
     );
 }
