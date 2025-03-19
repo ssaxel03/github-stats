@@ -31,12 +31,16 @@ interface CommitResponse {
 }
 
 // Returns the avatar url, login and url of the user's profile
-export async function getHeaderInfo(username: string): Promise<ProfileInfo> {
+export async function getHeaderInfo(username: string | null): Promise<ProfileInfo> {
     let profile: ProfileInfo = {
         avatar_url: "not-found-picture-light.svg",
         avatar_url_dark: "not-found-picture-dark.svg",
         login: "NOT FOUND",
         html_url: "#NOT_FOUND"
+    }
+
+    if(username === null) {
+        return profile;
     }
 
     const githubResponse = await fetch(`https://api.github.com/users/${username}`,
