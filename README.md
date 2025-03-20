@@ -29,6 +29,7 @@ Check it out live at [github-stats.ssaxel03.com](https://github-stats.ssaxel03.c
 
 - Next.js
 - React.js
+- TypeScript
 - Tailwind CSS
 - GitHub APIs:
   - GitHub REST API
