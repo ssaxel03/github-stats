@@ -2,6 +2,7 @@ import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/FooterComponent";
+import { Analytics } from "@vercel/analytics/react";
 
 export default function RootLayout({
   children,
@@ -24,6 +25,7 @@ export default function RootLayout({
           </main>
           <Footer />
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
