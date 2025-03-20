@@ -10,7 +10,7 @@ interface ProfileInfo {
 interface CommitInfo {
     message: string;
     repository: string;
-    date: string;
+    url: string;
 }
 
 interface UserStats {
@@ -28,6 +28,7 @@ interface CommitResponse {
     repository: {
         full_name: string,
     }
+    html_url: string
 }
 
 // Returns the avatar url, login and url of the user's profile
@@ -92,7 +93,8 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
         // Extract commit information
         const recentCommits: CommitInfo[] = searchData.items.map((item: CommitResponse) => ({
             message: item.commit.message,
-            repository: item.repository.full_name
+            repository: item.repository.full_name,
+            url: item.html_url
         }));
 
         return recentCommits;

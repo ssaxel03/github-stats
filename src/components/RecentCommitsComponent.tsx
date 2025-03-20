@@ -10,8 +10,8 @@ export default function Commits({
 }>) {
 
 
-    const [recentCommits, setRecentCommits] = useState<{ message: string; repository: string }[]>([]);
-    const [commitsShown, setCommitsShown] = useState<{ message: string; repository: string }[]>([]);
+    const [recentCommits, setRecentCommits] = useState<{ message: string; repository: string, url: string }[]>([]);
+    const [commitsShown, setCommitsShown] = useState<{ message: string; repository: string, url: string }[]>([]);
     const [showAll, setShowAll] = useState(false);
 
     useEffect(() => {
@@ -37,7 +37,7 @@ export default function Commits({
 
                                 </div>
                             </div>
-                            <a className="max-w-full" target="_blank" href={`https://github.com/${commit.repository}`}>
+                            <a className="max-w-full" target="_blank" href={commit.url}>
                                 <p className={`pl-8 dark:text-light hover:text-accent-orange ${key == commitsShown.length - 1 ? `` : `mb-8`}`}>{commit.message} @ {commit.repository}</p>
                             </a>
                         </div>
