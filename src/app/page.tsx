@@ -1,5 +1,7 @@
 import NavigationForm from "@/components/NavigationForm";
 import { Viewport } from "next";
+import { Metadata } from "next";
+import { generateUserMetadata } from "@/utils/generateMetadata";
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -8,6 +10,10 @@ export const viewport: Viewport = {
   userScalable: false,
   interactiveWidget: "resizes-content"
 }
+
+export const generateMetadata = async (): Promise<Metadata> => {
+  return generateUserMetadata();
+};
 
 export default function Home() {
 

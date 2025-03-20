@@ -1,35 +1,7 @@
-import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
 import ThemeToggle from "@/components/ThemeToggle";
 import Footer from "@/components/FooterComponent";
-
-export const metadata: Metadata = {
-  title: "GitHub Stats",
-  description: "Find out now what your favorite developers have been building.",
-  applicationName: "Axel's GitHub Stats",
-  authors: [{ name: "Axel Soares", url: "https:github.com/ssaxel03" }],
-  generator: "Next.js",
-  keywords: "github, github stats, my github stats, commits, contributions, lanuages, top languages, stats, stars",
-  creator: "Axel Soares",
-  publisher: "Axel Soares",
-  robots: "index, follow",
-  alternates: { canonical: "https://github-stats.ssaxel03.com" },
-  icons: "icon.svg",
-  openGraph: {
-    type: "website",
-    url: "https://github-stats.ssaxel03.com",
-    title: "GitHub Stats",
-    description: "Find out now what your favorite developers have been building.",
-    siteName: "GitHub Stats",
-    images: `https://github-stats.ssaxel03.com/api/og`
-  },
-  twitter: {
-    card: "summary_large_image",
-    images: "https://github-stats.ssaxel03.com/api/og"
-  },
-
-};
 
 export default function RootLayout({
   children,
