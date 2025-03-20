@@ -17,7 +17,6 @@ export default function Commits({
     useEffect(() => {
         async function fetchCommits() {
             const commits = await getRecentCommits(username);
-            console.log(commits);
             setRecentCommits(commits.slice(0, 15));
             setCommitsShown(commits.slice(0, 5));
             increaseLoaded();

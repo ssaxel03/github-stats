@@ -28,9 +28,9 @@ export async function generateUserMetadata(username?: string): Promise<Metadata>
 
   // Get user data
   const result = await getHeaderInfo(username);
-  const login = result?.login.slice(1) || "NOT FOUND";
+  const login = result.login === "NOT FOUND" ? result.login : result.login.slice(1);
   
-  const isUser = login !== "NOT FOUND";
+  const isUser = login != "NOT FOUND";
   
   // User-specific metadata
   return {

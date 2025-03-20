@@ -19,7 +19,6 @@ export default function Header({
 
     useEffect(() => {
         async function fetchCommits() {
-            console.log("fetching header");
 
             const fetch = await getHeaderInfo(username);
 
