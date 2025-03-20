@@ -52,8 +52,10 @@ export async function getHeaderInfo(username: string | null): Promise<ProfileInf
         }
     )
 
-    if (githubResponse.ok) {
-        profile = await githubResponse.json();
+    const data = await githubResponse.json();
+
+    if (githubResponse.ok && data.type === "User") {
+        profile = data;
         profile.login = "@" + profile.login;
         profile.avatar_url_dark = profile.avatar_url;
     }
