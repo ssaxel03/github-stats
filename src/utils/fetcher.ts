@@ -86,7 +86,7 @@ export async function getRecentCommits(username: string): Promise<CommitInfo[]> 
 
         const searchData = await searchResponse.json();
 
-        if (searchData.incomplete_results) {
+        if (searchData.items.author.login != username) {
             return [];
         }
 
