@@ -1,6 +1,6 @@
 # GitHub Stats
 
-A web application that provides comprehensive statistics and insights for GitHub users.
+Web application that provides comprehensive statistics and insights for GitHub users.
 
 ## Overview
 
