@@ -4,30 +4,36 @@ import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
 
-const WIDTH = 500;
-const BASE_HEIGHT = 315; // avatar/header + stat grid + padding, before any language rows
-const LANGUAGE_ROW_HEIGHT = 47;
-
+// GitHub's actual Primer color tokens, so the card blends into a README
+// instead of using this app's own site theme.
 const THEMES = {
     dark: {
-        bg: '#181818',
-        text: '#E3E3E3',
-        subtext: '#A3A3A3',
-        panel: '#383838',
-        border: '#282828',
+        bg: '#0d1117',
+        text: '#c9d1d9',
+        subtext: '#8b949e',
+        panel: '#161b22',
+        border: '#30363d',
         accent: '#E3561E',
     },
     light: {
-        bg: '#E3E3E3',
-        text: '#181818',
-        subtext: '#5A5A5A',
-        panel: '#FFFFFF',
-        border: '#181818',
+        bg: '#ffffff',
+        text: '#1f2328',
+        subtext: '#656d76',
+        panel: '#f6f8fa',
+        border: '#d0d7de',
         accent: '#E3561E',
     },
 };
 
-function errorCard(message: string, colors: typeof THEMES.dark) {
+const COMPACT_WIDTH = 500;
+const COMPACT_BASE_HEIGHT = 315; // avatar/header + stat grid + padding, before any language rows
+const COMPACT_LANGUAGE_ROW_HEIGHT = 47;
+
+const WIDE_WIDTH = 830;
+const WIDE_HEIGHT_WITH_LANGUAGES = 200;
+const WIDE_HEIGHT_NO_LANGUAGES = 150;
+
+function errorCard(message: string, colors: typeof THEMES.dark, width: number, height: number) {
     return new ImageResponse(
         (
             <div
@@ -37,24 +43,34 @@ function errorCard(message: string, colors: typeof THEMES.dark) {
                 {message}
             </div>
         ),
-        { width: WIDTH, height: BASE_HEIGHT }
+        { width, height }
     );
 }
 
-// Renders a README-embeddable stats card for a given GitHub user
 export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
     const username = searchParams.get('username');
     const colors = searchParams.get('theme') === 'light' ? THEMES.light : THEMES.dark;
+    const wide = searchParams.get('layout') === 'wide';
 
     if (!username) {
-        return errorCard('Missing "username" parameter', colors);
+        return errorCard(
+            'Missing "username" parameter',
+            colors,
+            wide ? WIDE_WIDTH : COMPACT_WIDTH,
+            wide ? WIDE_HEIGHT_NO_LANGUAGES : COMPACT_BASE_HEIGHT
+        );
     }
 
     const profile = await getHeaderInfo(username);
 
     if (profile.login === 'NOT FOUND') {
-        return errorCard(`User "${username}" not found`, colors);
+        return errorCard(
+            `User "${username}" not found`,
+            colors,
+            wide ? WIDE_WIDTH : COMPACT_WIDTH,
+            wide ? WIDE_HEIGHT_NO_LANGUAGES : COMPACT_BASE_HEIGHT
+        );
     }
 
     const [stats, languages] = await Promise.all([
@@ -63,14 +79,88 @@ export async function GET(request: Request) {
     ]);
 
     const topLanguages = languages.slice(0, 5);
-    const height = BASE_HEIGHT + topLanguages.length * LANGUAGE_ROW_HEIGHT;
+    const otherPercent = Math.max(0, 100 - topLanguages.reduce((sum, lang) => sum + parseFloat(lang.percent), 0));
 
-    const statItems = [
+    const compactStatItems = [
         { label: 'Stars', value: format(stats.stars) },
         { label: 'Total contributions', value: format(stats.totalContributions) },
         { label: 'Total commits', value: format(stats.totalCommits) },
         { label: 'Contributions this year', value: format(stats.contributionsThisYear) },
     ];
+
+    const wideStatItems = [
+        { label: 'Stars', value: format(stats.stars) },
+        { label: 'Contributions', value: format(stats.totalContributions) },
+        { label: 'Commits', value: format(stats.totalCommits) },
+        { label: 'This year', value: format(stats.contributionsThisYear) },
+    ];
+
+    const headers = {
+        'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
+    };
+
+    if (wide) {
+        const height = topLanguages.length > 0 ? WIDE_HEIGHT_WITH_LANGUAGES : WIDE_HEIGHT_NO_LANGUAGES;
+
+        return new ImageResponse(
+            (
+                <div
+                    tw="flex flex-col w-full h-full"
+                    style={{ background: colors.bg, color: colors.text, padding: '28px 36px', fontFamily: 'Arial' }}
+                >
+                    <div tw="flex flex-row items-center" style={{ flex: 1 }}>
+                        <img
+                            src={profile.avatar_url}
+                            alt=""
+                            width={72}
+                            height={72}
+                            style={{ borderRadius: '16px', border: `2px solid ${colors.border}`, marginRight: '24px' }}
+                        />
+                        <div tw="flex flex-col" style={{ marginRight: '40px', minWidth: '180px' }}>
+                            <span tw="text-3xl" style={{ fontWeight: 700 }}>{profile.login}</span>
+                            <span tw="text-lg" style={{ color: colors.accent }}>GitHub Stats</span>
+                        </div>
+
+                        <div tw="flex flex-row" style={{ flex: 1, gap: '32px', borderLeft: `1px solid ${colors.border}`, paddingLeft: '40px' }}>
+                            {wideStatItems.map((item) => (
+                                <div key={item.label} tw="flex flex-col" style={{ flex: 1 }}>
+                                    <span tw="text-2xl" style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>{item.value}</span>
+                                    <span tw="text-base" style={{ color: colors.subtext, whiteSpace: 'nowrap' }}>{item.label}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {topLanguages.length > 0 && (
+                        <div tw="flex flex-col" style={{ marginTop: '20px' }}>
+                            <div
+                                tw="flex w-full flex-row overflow-hidden"
+                                style={{ height: '10px', borderRadius: '6px', background: colors.panel }}
+                            >
+                                {topLanguages.map((lang) => (
+                                    <div key={lang.name} style={{ width: `${lang.percent}%`, background: lang.color, height: '100%' }} />
+                                ))}
+                                {otherPercent > 0.5 && (
+                                    <div style={{ width: `${otherPercent}%`, background: colors.border, height: '100%' }} />
+                                )}
+                            </div>
+                            <div tw="flex flex-row" style={{ marginTop: '12px' }}>
+                                {topLanguages.map((lang) => (
+                                    <div key={lang.name} tw="flex flex-row items-center text-base" style={{ marginRight: '24px' }}>
+                                        <div style={{ width: '10px', height: '10px', borderRadius: '5px', background: lang.color, marginRight: '8px' }} />
+                                        <span>{lang.name} {lang.percent}%</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ),
+            { width: WIDE_WIDTH, height, headers }
+        );
+    }
+
+    const height = COMPACT_BASE_HEIGHT + topLanguages.length * COMPACT_LANGUAGE_ROW_HEIGHT;
 
     return new ImageResponse(
         (
@@ -93,7 +183,7 @@ export async function GET(request: Request) {
                 </div>
 
                 <div tw="flex flex-row flex-wrap" style={{ marginTop: '28px' }}>
-                    {statItems.map((item) => (
+                    {compactStatItems.map((item) => (
                         <div key={item.label} tw="flex flex-col" style={{ width: '50%', marginBottom: '20px' }}>
                             <span tw="text-2xl" style={{ fontWeight: 700 }}>{item.value}</span>
                             <span tw="text-lg" style={{ color: colors.subtext }}>{item.label}</span>
@@ -121,12 +211,6 @@ export async function GET(request: Request) {
                 )}
             </div>
         ),
-        {
-            width: WIDTH,
-            height,
-            headers: {
-                'Cache-Control': 'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400',
-            },
-        }
+        { width: COMPACT_WIDTH, height, headers }
     );
 }

@@ -27,18 +27,25 @@ https://github-stats.ssaxel03.com/api/card?username=<username>&theme=dark
 ```
 
 - `username` (required): the GitHub username to show stats for
-- `theme`: `dark` (default) or `light`
+- `theme`: `dark` (default) or `light` — uses GitHub's own background/text colors so it blends into the README
+- `layout`: `compact` (default, tall card) or `wide` (banner, looks best at `width="100%"`)
 
 ```md
 ![GitHub Stats](https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=dark)
+```
+
+For a full-width banner:
+
+```html
+<img width="100%" alt="GitHub Stats" src="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=dark&layout=wide">
 ```
 
 To automatically match the viewer's GitHub color scheme, use a `<picture>` tag instead:
 
 ```html
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=dark">
-  <img alt="GitHub Stats" src="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=light">
+  <source media="(prefers-color-scheme: dark)" srcset="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=dark&layout=wide">
+  <img width="100%" alt="GitHub Stats" src="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=light&layout=wide">
 </picture>
 ```
 
