@@ -16,10 +16,31 @@ GitHub Stats gives you a quick and insightful view of any GitHub user's activity
 - **Language Analysis**: Visualizes all programming languages used, ranked from most to least used
 - **Single Dashboard**: Access all important GitHub statistics in one convenient place
 - **Private Repository Support**: When deploying your own instance with your personal GitHub token, you can view statistics for both public and private repositories
+- **Card Image Generation**: Generate an embeddable stats card for your GitHub profile or README (see below)
 
-## Roadmap
+## Embeddable README card
 
-- **Card Image Generation**: Create embeddable cards that can be added to GitHub profiles and READMEs to showcase real-time GitHub statistics
+Generate a live stats card for any user and drop it straight into a README or profile page:
+
+```
+https://github-stats.ssaxel03.com/api/card?username=<username>&theme=dark
+```
+
+- `username` (required): the GitHub username to show stats for
+- `theme`: `dark` (default) or `light`
+
+```md
+![GitHub Stats](https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=dark)
+```
+
+To automatically match the viewer's GitHub color scheme, use a `<picture>` tag instead:
+
+```html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=dark">
+  <img alt="GitHub Stats" src="https://github-stats.ssaxel03.com/api/card?username=ssaxel03&theme=light">
+</picture>
+```
 
 ## Live demo
 
