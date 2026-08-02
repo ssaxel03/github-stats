@@ -29,16 +29,21 @@ const COMPACT_WIDTH = 500;
 const COMPACT_BASE_HEIGHT = 315; // avatar/header + stat grid + padding, before any language rows
 const COMPACT_LANGUAGE_ROW_HEIGHT = 47;
 
-const WIDE_WIDTH = 830;
-const WIDE_HEIGHT_WITH_LANGUAGES = 200;
-const WIDE_HEIGHT_NO_LANGUAGES = 150;
+// The wide layout is rendered at 2x and displayed via width="100%", so it
+// stays crisp instead of getting upscaled/blurry by the browser.
+const WIDE_SCALE = 2;
+const px = (n: number) => `${n * WIDE_SCALE}px`;
 
-function errorCard(message: string, colors: typeof THEMES.dark, width: number, height: number) {
+const WIDE_WIDTH = 830 * WIDE_SCALE;
+const WIDE_HEIGHT_WITH_LANGUAGES = 190 * WIDE_SCALE;
+const WIDE_HEIGHT_NO_LANGUAGES = 130 * WIDE_SCALE;
+
+function errorCard(message: string, colors: typeof THEMES.dark, width: number, height: number, fontSize: number) {
     return new ImageResponse(
         (
             <div
-                tw="flex w-full h-full items-center justify-center text-center px-16 text-3xl"
-                style={{ background: colors.bg, color: colors.text }}
+                tw="flex w-full h-full items-center justify-center text-center px-16"
+                style={{ background: colors.bg, color: colors.text, fontSize: `${fontSize}px` }}
             >
                 {message}
             </div>
@@ -58,7 +63,8 @@ export async function GET(request: Request) {
             'Missing "username" parameter',
             colors,
             wide ? WIDE_WIDTH : COMPACT_WIDTH,
-            wide ? WIDE_HEIGHT_NO_LANGUAGES : COMPACT_BASE_HEIGHT
+            wide ? WIDE_HEIGHT_NO_LANGUAGES : COMPACT_BASE_HEIGHT,
+            wide ? 30 * WIDE_SCALE : 30
         );
     }
 
@@ -69,7 +75,8 @@ export async function GET(request: Request) {
             `User "${username}" not found`,
             colors,
             wide ? WIDE_WIDTH : COMPACT_WIDTH,
-            wide ? WIDE_HEIGHT_NO_LANGUAGES : COMPACT_BASE_HEIGHT
+            wide ? WIDE_HEIGHT_NO_LANGUAGES : COMPACT_BASE_HEIGHT,
+            wide ? 30 * WIDE_SCALE : 30
         );
     }
 
@@ -106,36 +113,48 @@ export async function GET(request: Request) {
             (
                 <div
                     tw="flex flex-col w-full h-full"
-                    style={{ background: colors.bg, color: colors.text, padding: '28px 36px', fontFamily: 'Arial' }}
+                    style={{ background: colors.bg, color: colors.text, padding: `${px(24)} ${px(36)}`, fontFamily: 'Arial' }}
                 >
-                    <div tw="flex flex-row items-center" style={{ flex: 1 }}>
-                        <img
-                            src={profile.avatar_url}
-                            alt=""
-                            width={72}
-                            height={72}
-                            style={{ borderRadius: '16px', border: `2px solid ${colors.border}`, marginRight: '24px' }}
-                        />
-                        <div tw="flex flex-col" style={{ marginRight: '40px', minWidth: '180px' }}>
-                            <span tw="text-3xl" style={{ fontWeight: 700 }}>{profile.login}</span>
-                            <span tw="text-lg" style={{ color: colors.accent }}>GitHub Stats</span>
+                    <div tw="flex flex-row items-center justify-between" style={{ flex: 1 }}>
+                        <div tw="flex flex-col" style={{ marginRight: px(36) }}>
+                            <span style={{ fontSize: px(26), fontWeight: 700, whiteSpace: 'nowrap' }}>{profile.login}</span>
+                            <span style={{ fontSize: px(14), color: colors.accent, whiteSpace: 'nowrap' }}>GitHub Stats</span>
                         </div>
 
-                        <div tw="flex flex-row" style={{ flex: 1, gap: '32px', borderLeft: `1px solid ${colors.border}`, paddingLeft: '40px' }}>
-                            {wideStatItems.map((item) => (
-                                <div key={item.label} tw="flex flex-col" style={{ flex: 1 }}>
-                                    <span tw="text-2xl" style={{ fontWeight: 700, whiteSpace: 'nowrap' }}>{item.value}</span>
-                                    <span tw="text-base" style={{ color: colors.subtext, whiteSpace: 'nowrap' }}>{item.label}</span>
+                        <div tw="flex flex-row items-center">
+                            {wideStatItems.map((item, i) => (
+                                <div
+                                    key={item.label}
+                                    tw="flex flex-col items-center"
+                                    style={
+                                        i === 0
+                                            ? {}
+                                            : { paddingLeft: px(28), marginLeft: px(28), borderLeft: `1px solid ${colors.border}` }
+                                    }
+                                >
+                                    <span style={{ fontSize: px(22), fontWeight: 700, whiteSpace: 'nowrap' }}>{item.value}</span>
+                                    <span
+                                        style={{
+                                            fontSize: px(11),
+                                            color: colors.subtext,
+                                            whiteSpace: 'nowrap',
+                                            textTransform: 'uppercase',
+                                            letterSpacing: px(0.5),
+                                            marginTop: px(4),
+                                        }}
+                                    >
+                                        {item.label}
+                                    </span>
                                 </div>
                             ))}
                         </div>
                     </div>
 
                     {topLanguages.length > 0 && (
-                        <div tw="flex flex-col" style={{ marginTop: '20px' }}>
+                        <div tw="flex flex-col" style={{ marginTop: px(20) }}>
                             <div
                                 tw="flex w-full flex-row overflow-hidden"
-                                style={{ height: '10px', borderRadius: '6px', background: colors.panel }}
+                                style={{ height: px(8), borderRadius: px(4), background: colors.panel }}
                             >
                                 {topLanguages.map((lang) => (
                                     <div key={lang.name} style={{ width: `${lang.percent}%`, background: lang.color, height: '100%' }} />
@@ -144,11 +163,11 @@ export async function GET(request: Request) {
                                     <div style={{ width: `${otherPercent}%`, background: colors.border, height: '100%' }} />
                                 )}
                             </div>
-                            <div tw="flex flex-row" style={{ marginTop: '12px' }}>
+                            <div tw="flex flex-row" style={{ marginTop: px(12) }}>
                                 {topLanguages.map((lang) => (
-                                    <div key={lang.name} tw="flex flex-row items-center text-base" style={{ marginRight: '24px' }}>
-                                        <div style={{ width: '10px', height: '10px', borderRadius: '5px', background: lang.color, marginRight: '8px' }} />
-                                        <span>{lang.name} {lang.percent}%</span>
+                                    <div key={lang.name} tw="flex flex-row items-center" style={{ marginRight: px(20), fontSize: px(13) }}>
+                                        <div style={{ width: px(8), height: px(8), borderRadius: px(4), background: lang.color, marginRight: px(6) }} />
+                                        <span style={{ whiteSpace: 'nowrap' }}>{lang.name} {lang.percent}%</span>
                                     </div>
                                 ))}
                             </div>
